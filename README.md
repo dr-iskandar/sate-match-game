@@ -1,34 +1,47 @@
 # Sate Match Game
 
-A mobile-first web game prototype inspired by casual cooking / skewer matching mechanics.
+Mobile-portrait web game prototype for matching satay/skewer orders.
 
-## Gameplay rules
+## Current gameplay
 
-- Player builds a 5-ingredient skewer by tapping ingredients.
+- Read the order card from **top to bottom**.
+- Build the real skewer from **bottom to top** by tapping the bottom ingredient first.
 - Correct skewer: score increases by `10 × current multiplier`.
-- Wrong skewer: lose 1 heart. Score does not decrease.
+- Wrong skewer: lose 1 heart; score is unchanged.
 - Every 5 correct skewers, a quiz appears.
-- Correct quiz answer: multiplier increases by `+0.5`.
-- Wrong quiz answer: no penalty and multiplier stays the same.
-- Game ends when time reaches zero or all hearts are lost.
+- Correct quiz: multiplier `+0.5`.
+- Wrong quiz: no penalty.
+- Timer pauses while a quiz is open.
+- English and Indonesian are selectable before the game starts.
 
-## Stack
+## Mobile-first layout
 
-- Vite
+The game is designed for portrait phones. On desktop, it stays centered in a mobile-sized frame instead of expanding to desktop width.
+
+## Stack and dependencies
+
 - Vanilla JavaScript
 - HTML/CSS
-- No backend required
+- Vite `7.1.7` as the only development dependency
+- Node.js `>=20.19.0`
+- No runtime framework or third-party gameplay dependency
 
-## Run locally
+## Run
 
 ```bash
 npm install
 npm run dev
 ```
 
-Then open the local URL shown by Vite.
+## Validate
 
-## Production build
+```bash
+npm run check
+```
+
+The check command runs gameplay unit tests plus JavaScript syntax validation.
+
+## Build
 
 ```bash
 npm run build
@@ -43,13 +56,8 @@ sate-match-game/
 ├── package.json
 ├── README.md
 └── src/
+    ├── gameLogic.js
+    ├── gameLogic.test.js
     ├── main.js
     └── style.css
 ```
-
-## Next recommended steps
-
-- Replace emoji placeholders with generated transparent PNG/WebP assets.
-- Add sound effects and background music.
-- Move gameplay rendering to Phaser if more advanced animation, particles, physics, or a growing library of mini-games is needed.
-- Add leaderboard / participant identity via API when required.
