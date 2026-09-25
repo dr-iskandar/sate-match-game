@@ -18,7 +18,7 @@ const GAME_DURATION = 60;
 const MAX_HEARTS = 5;
 const SKEWER_LENGTH = 5;
 const BASE_SCORE = 10;
-const QUIZ_EVERY = 5;
+const QUIZ_EVERY = 1;
 const QUIZ_MULTIPLIER_STEP = 0.5;
 
 const COPY = {
@@ -42,7 +42,7 @@ const COPY = {
       'Build the skewer from <strong>bottom to top</strong> — tap the bottom ingredient first.',
       'Correct skewer: score increases by <strong>10 × multiplier</strong>.',
       'Wrong skewer: lose <strong>1 heart</strong>. Score stays the same.',
-      'Every <strong>5 correct skewers</strong>, a quiz appears.',
+      'After <strong>every correct skewer</strong>, a quiz appears.',
       'Correct quiz: multiplier <strong>+0.5</strong>. Wrong quiz: no penalty.',
     ],
     start: 'START GAME',
@@ -85,7 +85,7 @@ const COPY = {
       'Susun sate dari <strong>bawah ke atas</strong> — tekan bahan paling bawah terlebih dahulu.',
       'Sate benar: skor bertambah <strong>10 × multiplier</strong>.',
       'Sate salah: <strong>nyawa berkurang 1</strong>. Skor tetap.',
-      'Setiap <strong>5 sate benar</strong>, quiz akan muncul.',
+      'Setelah <strong>setiap sate benar</strong>, quiz akan muncul.',
       'Quiz benar: multiplier <strong>+0.5</strong>. Quiz salah: tidak ada penalti.',
     ],
     start: 'MULAI GAME',
@@ -465,6 +465,7 @@ function nextOrder() {
 function openQuiz() {
   if (!state.running) return;
   state.quizOpen = true;
+  stopTimer();
 
   const correctFood = randomItem(FOODS);
   const distractors = shuffle(FOODS.filter((food) => food.id !== correctFood.id)).slice(0, 3);
@@ -490,7 +491,6 @@ function openQuiz() {
 
 function resolveQuiz(correct, selectedButton) {
   if (!state.quizOpen) return;
-  state.quizOpen = false;
 
   const buttons = [...els.quizOptions.querySelectorAll('button')];
   buttons.forEach((button) => { button.disabled = true; });
@@ -512,7 +512,9 @@ function resolveQuiz(correct, selectedButton) {
 
   setTimeout(() => {
     els.quizOverlay.classList.add('hidden');
+    state.quizOpen = false;
     nextOrder();
+    if (state.running) startTimer();
   }, 1100);
 }
 
