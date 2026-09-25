@@ -18,6 +18,28 @@ Mobile-portrait web game prototype for matching satay/skewer orders.
 
 The game is designed for portrait phones. On desktop, it stays centered in a mobile-sized frame instead of expanding to desktop width.
 
+## Visual assets
+
+Gameplay visuals now use lightweight stylized SVG files instead of emoji placeholders:
+
+```text
+public/assets/
+├── environment/
+│   └── skewer-stick.svg
+├── ingredients/
+│   ├── beef-cube.svg
+│   ├── corn-chunk.svg
+│   ├── mushroom-slice.svg
+│   ├── onion-piece.svg
+│   ├── shrimp-piece.svg
+│   └── tomato-chunk.svg
+└── ui/
+    ├── heart-empty.svg
+    └── heart-full.svg
+```
+
+Ingredient placement uses CSS transform animation, so no frame-based sprite sheet is required for basic pop/bounce motion.
+
 ## Stack and dependencies
 
 - Vanilla JavaScript
