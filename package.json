@@ -1,14 +1,19 @@
 {
   "name": "sate-match-game",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "node --test src/gameLogic.test.js",
+    "check": "npm run test && node --check src/main.js && node --check src/gameLogic.js"
   },
   "devDependencies": {
-    "vite": "^7.1.7"
+    "vite": "7.1.7"
   }
 }
