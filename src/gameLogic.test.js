@@ -34,9 +34,9 @@ test('score uses current multiplier', () => {
   assert.equal(scoreForCorrectSkewer(2), 20);
 });
 
-test('quiz triggers every fifth correct skewer', () => {
-  assert.equal(shouldShowQuiz(4), false);
-  assert.equal(shouldShowQuiz(5), true);
-  assert.equal(shouldShowQuiz(10), true);
-  assert.equal(shouldShowQuiz(0), false);
+test('quiz can trigger after every correct skewer', () => {
+  assert.equal(shouldShowQuiz(1, 1), true);
+  assert.equal(shouldShowQuiz(2, 1), true);
+  assert.equal(shouldShowQuiz(5, 1), true);
+  assert.equal(shouldShowQuiz(0, 1), false);
 });
