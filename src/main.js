@@ -6,12 +6,12 @@ import {
 } from './gameLogic.js';
 
 const FOODS = [
-  { id: 'beef', icon: '🥩', name: { en: 'Beef', id: 'Daging Sapi' } },
-  { id: 'tomato', icon: '🍅', name: { en: 'Tomato', id: 'Tomat' } },
-  { id: 'mushroom', icon: '🍄', name: { en: 'Mushroom', id: 'Jamur' } },
-  { id: 'corn', icon: '🌽', name: { en: 'Corn', id: 'Jagung' } },
-  { id: 'onion', icon: '🧅', name: { en: 'Onion', id: 'Bawang' } },
-  { id: 'shrimp', icon: '🍤', name: { en: 'Shrimp', id: 'Udang' } },
+  { id: 'beef', asset: '/assets/ingredients/beef-cube.svg', name: { en: 'Beef', id: 'Daging Sapi' } },
+  { id: 'tomato', asset: '/assets/ingredients/tomato-chunk.svg', name: { en: 'Tomato', id: 'Tomat' } },
+  { id: 'mushroom', asset: '/assets/ingredients/mushroom-slice.svg', name: { en: 'Mushroom', id: 'Jamur' } },
+  { id: 'corn', asset: '/assets/ingredients/corn-chunk.svg', name: { en: 'Corn', id: 'Jagung' } },
+  { id: 'onion', asset: '/assets/ingredients/onion-piece.svg', name: { en: 'Onion', id: 'Bawang' } },
+  { id: 'shrimp', asset: '/assets/ingredients/shrimp-piece.svg', name: { en: 'Shrimp', id: 'Udang' } },
 ];
 
 const GAME_DURATION = 60;
@@ -135,7 +135,7 @@ app.innerHTML = `
           <div class="grill">
             <div class="coal"></div>
             <div class="grid-lines"></div>
-            <div class="stick"></div>
+            <img class="stick-art" src="/assets/environment/skewer-stick.svg" alt="" />
             <div class="player-stack" id="playerStack"></div>
           </div>
         </div>
@@ -153,7 +153,7 @@ app.innerHTML = `
                 <button type="button" class="lang-btn" data-lang="id" aria-pressed="false">Indonesia</button>
               </div>
             </div>
-            <div class="panel-hero">🍢</div>
+            <div class="panel-hero" aria-hidden="true"><img src="/assets/ingredients/beef-cube.svg" alt="" /><img src="/assets/ingredients/tomato-chunk.svg" alt="" /><img src="/assets/ingredients/shrimp-piece.svg" alt="" /></div>
             <h1 id="gameTitle">SATE MATCH</h1>
             <p class="subtitle" id="subtitle">Match the order card exactly. Build the skewer from bottom to top.</p>
             <div class="steps" id="steps"></div>
@@ -166,7 +166,7 @@ app.innerHTML = `
             <div class="quiz-badge">?</div>
             <h2 id="quizTitle">QUIZ</h2>
             <p id="quizPrompt">Which ingredient is this?</p>
-            <div class="quiz-ingredient" id="quizIngredient">🌽</div>
+            <div class="quiz-ingredient" id="quizIngredient"></div>
             <div class="quiz-options" id="quizOptions"></div>
             <div class="quiz-result hidden" id="quizResult" aria-live="polite"></div>
           </div>
@@ -280,6 +280,10 @@ function foodName(food) {
   return food.name[state.lang];
 }
 
+function foodImageMarkup(food, className = 'food-art') {
+  return `<img class="${className}" src="${food.asset}" alt="${foodName(food)}" draggable="false" />`;
+}
+
 function multiplierLabel(value) {
   return `×${Number.isInteger(value) ? value : value.toFixed(1)}`;
 }
@@ -344,9 +348,12 @@ function applyLanguage(lang) {
 function updateHud() {
   els.hearts.innerHTML = '';
   for (let i = 0; i < MAX_HEARTS; i += 1) {
-    const heart = document.createElement('span');
-    heart.textContent = i < state.hearts ? '❤️' : '♡';
-    heart.className = i < state.hearts ? 'heart alive' : 'heart empty';
+    const heart = document.createElement('img');
+    const alive = i < state.hearts;
+    heart.src = alive ? '/assets/ui/heart-full.svg' : '/assets/ui/heart-empty.svg';
+    heart.alt = '';
+    heart.className = alive ? 'heart alive' : 'heart empty';
+    heart.draggable = false;
     els.hearts.appendChild(heart);
   }
   els.multiplier.textContent = multiplierLabel(state.multiplier);
@@ -369,8 +376,8 @@ function renderOrder() {
     if (!food) return;
     const item = document.createElement('div');
     item.className = 'order-item';
-    item.textContent = food.icon;
     item.title = foodName(food);
+    item.innerHTML = foodImageMarkup(food, 'order-food-art');
     els.orderStack.appendChild(item);
   });
 }
@@ -382,7 +389,7 @@ function renderPlayerStack() {
     if (!food) return;
     const item = document.createElement('div');
     item.className = 'skewer-piece';
-    item.textContent = food.icon;
+    item.innerHTML = foodImageMarkup(food, 'skewer-food-art');
     els.playerStack.appendChild(item);
   });
 }
@@ -394,7 +401,7 @@ function renderIngredientButtons() {
     button.type = 'button';
     button.className = 'ingredient-btn';
     button.setAttribute('aria-label', foodName(food));
-    button.innerHTML = `<span>${food.icon}</span><small>${foodName(food)}</small>`;
+    button.innerHTML = `${foodImageMarkup(food, 'ingredient-food-art')}<small>${foodName(food)}</small>`;
     button.addEventListener('click', () => pickIngredient(food.id));
     els.ingredients.appendChild(button);
   });
@@ -471,7 +478,7 @@ function openQuiz() {
   const distractors = shuffle(FOODS.filter((food) => food.id !== correctFood.id)).slice(0, 3);
   const options = shuffle([correctFood, ...distractors]);
 
-  els.quizIngredient.textContent = correctFood.icon;
+  els.quizIngredient.innerHTML = foodImageMarkup(correctFood, 'quiz-food-art');
   els.quizOptions.innerHTML = '';
   els.quizResult.className = 'quiz-result hidden';
   els.quizResult.textContent = '';
@@ -481,7 +488,7 @@ function openQuiz() {
     button.type = 'button';
     button.className = 'quiz-option';
     button.setAttribute('aria-label', foodName(food));
-    button.innerHTML = `<span>${food.icon}</span><small>${foodName(food)}</small>`;
+    button.innerHTML = `${foodImageMarkup(food, 'quiz-option-art')}<small>${foodName(food)}</small>`;
     button.addEventListener('click', () => resolveQuiz(food.id === correctFood.id, button));
     els.quizOptions.appendChild(button);
   });
