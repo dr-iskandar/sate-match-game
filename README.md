@@ -8,10 +8,10 @@ Mobile-portrait web game prototype for matching satay/skewer orders.
 - Build the real skewer from **bottom to top** by tapping the bottom ingredient first.
 - Correct skewer: score increases by `10 × current multiplier`.
 - Wrong skewer: lose 1 heart; score is unchanged.
-- Every 5 correct skewers, a quiz appears.
+- Every correct skewer awards points and immediately leads to a quiz.
 - Correct quiz: multiplier `+0.5`.
 - Wrong quiz: no penalty.
-- Timer pauses while a quiz is open.
+- Countdown pauses as soon as the quiz opens and resumes only after the quiz has been answered and closed.
 - English and Indonesian are selectable before the game starts.
 
 ## Mobile-first layout
