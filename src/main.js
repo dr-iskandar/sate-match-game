@@ -382,16 +382,34 @@ function renderOrder() {
   });
 }
 
+function createSkewerPiece(id, animate = false) {
+  const food = foodById(id);
+  if (!food) return null;
+
+  const item = document.createElement('div');
+  item.className = animate ? 'skewer-piece entering' : 'skewer-piece';
+  item.innerHTML = foodImageMarkup(food, 'skewer-food-art');
+
+  if (animate) {
+    const visualPosition = state.currentPick.length - 1;
+    const dropDistance = Math.max(32, 150 - (visualPosition * 29));
+    item.style.setProperty('--drop-distance', `${dropDistance}px`);
+  }
+
+  return item;
+}
+
 function renderPlayerStack() {
   els.playerStack.innerHTML = '';
   state.currentPick.forEach((id) => {
-    const food = foodById(id);
-    if (!food) return;
-    const item = document.createElement('div');
-    item.className = 'skewer-piece';
-    item.innerHTML = foodImageMarkup(food, 'skewer-food-art');
-    els.playerStack.appendChild(item);
+    const item = createSkewerPiece(id);
+    if (item) els.playerStack.appendChild(item);
   });
+}
+
+function appendPlayerPiece(id) {
+  const item = createSkewerPiece(id, true);
+  if (item) els.playerStack.appendChild(item);
 }
 
 function renderIngredientButtons() {
@@ -419,9 +437,9 @@ function showToast(text, type = 'normal') {
 function pickIngredient(id) {
   if (!state.running || state.quizOpen || state.currentPick.length >= SKEWER_LENGTH) return;
   state.currentPick.push(id);
-  renderPlayerStack();
+  appendPlayerPiece(id);
   if (state.currentPick.length === SKEWER_LENGTH) {
-    setTimeout(resolveSkewer, 180);
+    setTimeout(resolveSkewer, 420);
   }
 }
 
