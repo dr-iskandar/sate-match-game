@@ -273,7 +273,12 @@ button { -webkit-tap-highlight-color: transparent; }
   display: grid;
   place-items: center;
   margin-top: -3px;
-  animation: piece-pop .18s cubic-bezier(.2,.9,.3,1.25);
+  transform-origin: center;
+  will-change: transform, opacity;
+}
+
+.skewer-piece.entering {
+  animation: skewer-thread-in .38s cubic-bezier(.22,.82,.28,1.08) both;
 }
 
 .skewer-food-art {
@@ -285,9 +290,22 @@ button { -webkit-tap-highlight-color: transparent; }
   -webkit-user-drag: none;
 }
 
-@keyframes piece-pop {
-  from { opacity: .25; transform: scale(.6) translateY(12px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+@keyframes skewer-thread-in {
+  0% {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--drop-distance, 120px))) scale(.72);
+  }
+  32% {
+    opacity: .62;
+  }
+  78% {
+    opacity: 1;
+    transform: translateY(4px) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .status {
