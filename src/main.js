@@ -56,6 +56,7 @@ const COPY = {
     ingredients: 'Ingredients',
     time: 'TIME',
     reset: 'RESET',
+    resetStatus: 'Current skewer cleared. Keep following the same order.',
     soundOn: 'Sound on',
     soundOff: 'Sound off',
     title: 'SATE MATCH',
@@ -101,6 +102,7 @@ const COPY = {
     ingredients: 'Bahan',
     time: 'WAKTU',
     reset: 'ULANG',
+    resetStatus: 'Susunan sate saat ini dihapus. Pesanan tetap sama.',
     soundOn: 'Suara aktif',
     soundOff: 'Suara mati',
     title: 'SATE MATCH',
@@ -281,6 +283,7 @@ const state = {
   quizOpen: false,
   timer: null,
   lastEndReasonKey: null,
+  pendingSkewerResolution: null,
   soundEnabled: readSoundPreference(),
 };
 
@@ -530,9 +533,24 @@ function pickIngredient(id) {
   playSfx('thread');
   state.currentPick.push(id);
   appendPlayerPiece(id);
+
   if (state.currentPick.length === SKEWER_LENGTH) {
-    setTimeout(resolveSkewer, 420);
+    clearTimeout(state.pendingSkewerResolution);
+    state.pendingSkewerResolution = setTimeout(() => {
+      state.pendingSkewerResolution = null;
+      resolveSkewer();
+    }, 420);
   }
+}
+
+function resetCurrentSkewer() {
+  if (!state.running || state.quizOpen) return;
+
+  clearTimeout(state.pendingSkewerResolution);
+  state.pendingSkewerResolution = null;
+  state.currentPick = [];
+  renderPlayerStack();
+  els.status.textContent = t('resetStatus');
 }
 
 function resolveSkewer() {
@@ -577,6 +595,8 @@ function resolveSkewer() {
 
 function nextOrder() {
   if (!state.running) return;
+  clearTimeout(state.pendingSkewerResolution);
+  state.pendingSkewerResolution = null;
   generateOrder();
   els.status.textContent = t('nextOrder');
 }
@@ -659,6 +679,7 @@ function startTimer() {
 
 function startGame() {
   stopTimer();
+  clearTimeout(state.pendingSkewerResolution);
   Object.assign(state, {
     score: 0,
     hearts: MAX_HEARTS,
@@ -670,6 +691,7 @@ function startGame() {
     running: true,
     quizOpen: false,
     lastEndReasonKey: null,
+    pendingSkewerResolution: null,
   });
 
   els.howToOverlay.classList.add('hidden');
@@ -694,6 +716,8 @@ function updateGameOverCopy() {
 
 function endGame(reasonKey) {
   if (!state.running) return;
+  clearTimeout(state.pendingSkewerResolution);
+  state.pendingSkewerResolution = null;
   state.running = false;
   state.quizOpen = false;
   state.lastEndReasonKey = reasonKey;
@@ -708,7 +732,7 @@ els.langButtons.forEach((button) => {
 });
 els.startBtn.addEventListener('click', startGame);
 els.retryBtn.addEventListener('click', startGame);
-els.resetBtn.addEventListener('click', startGame);
+els.resetBtn.addEventListener('click', resetCurrentSkewer);
 els.soundBtn.addEventListener('click', toggleSound);
 
 renderIngredientButtons();
