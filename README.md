@@ -40,6 +40,15 @@ public/assets/
 
 Ingredient placement uses CSS transform animation, so no frame-based sprite sheet is required for basic pop/bounce motion.
 
+## Audio
+
+The game includes lightweight CC0 audio assets:
+
+- Looping background music starts after the player presses Start, respecting browser autoplay rules.
+- Ingredient threading, correct answers, wrong answers, and quiz opening have separate sound cues.
+- A sound toggle in the footer persists the player's preference in localStorage.
+- Audio provenance and license details are recorded in `public/assets/audio/LICENSES.md`.
+
 ## Stack and dependencies
 
 - Vanilla JavaScript
