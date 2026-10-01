@@ -1,16 +1,16 @@
 # Audio licenses
 
-All bundled audio in this folder is CC0 1.0 / public-domain dedicated and may be used in personal and commercial projects without attribution.
+All bundled audio in this folder is Creative Commons Zero (CC0 1.0) / public-domain dedicated and may be used in personal and commercial projects without attribution.
 
 ## Background music
 
-- File: `bgm.ogg`
-- Original: `bgmusic1.ogg` ("Background Music 1")
-- Creator: Tozan
-- Source: OpenGameArt
+- File: `bgm.mp3`
+- Original track: Kenney `Flowing Rocks` from the Music Loops pack
+- Creator: Kenney (Kenney.nl)
 - License: CC0 1.0
-- Source page: https://opengameart.org/node/62853
-- Repository copy used for integration: https://github.com/ishaanrajiv/snake-rs
+- Source pack: Kenney Music Loops
+- Repository copy used for integration: https://github.com/Bit-Serenity-Studios/Match3
+- The repository documents `assets/music/kenney_*.mp3` as transcoded Kenney Music Loops assets under CC0 1.0.
 
 ## Sound effects
 
@@ -22,7 +22,7 @@ Files:
 
 Creator: Kenney (Kenney.nl)
 Pack: Interface Sounds
-License: Creative Commons Zero (CC0 1.0)
+License: CC0 1.0
 Source: https://kenney.nl/assets/interface-sounds
 Repository copy used for integration: https://github.com/Calinou/kenney-interface-sounds
 
