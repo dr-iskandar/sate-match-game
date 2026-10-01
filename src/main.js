@@ -23,7 +23,7 @@ const QUIZ_MULTIPLIER_STEP = 0.5;
 const SOUND_STORAGE_KEY = 'sate-match:sound-enabled';
 
 const AUDIO_PATHS = {
-  bgm: '/assets/audio/bgm.ogg',
+  bgm: '/assets/audio/bgm.mp3',
   thread: '/assets/audio/ingredient-thread.wav',
   success: '/assets/audio/success.wav',
   error: '/assets/audio/error.wav',
