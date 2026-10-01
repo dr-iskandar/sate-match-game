@@ -20,6 +20,28 @@ const SKEWER_LENGTH = 5;
 const BASE_SCORE = 10;
 const QUIZ_EVERY = 1;
 const QUIZ_MULTIPLIER_STEP = 0.5;
+const SOUND_STORAGE_KEY = 'sate-match:sound-enabled';
+
+const AUDIO_PATHS = {
+  bgm: '/assets/audio/bgm.ogg',
+  thread: '/assets/audio/ingredient-thread.wav',
+  success: '/assets/audio/success.wav',
+  error: '/assets/audio/error.wav',
+  quiz: '/assets/audio/quiz.wav',
+};
+
+const AUDIO_VOLUMES = {
+  bgm: 0.18,
+  thread: 0.42,
+  success: 0.5,
+  error: 0.42,
+  quiz: 0.38,
+};
+
+const bgm = new Audio(AUDIO_PATHS.bgm);
+bgm.loop = true;
+bgm.preload = 'auto';
+bgm.volume = AUDIO_VOLUMES.bgm;
 
 const COPY = {
   en: {
@@ -34,6 +56,8 @@ const COPY = {
     ingredients: 'Ingredients',
     time: 'TIME',
     reset: 'RESET',
+    soundOn: 'Sound on',
+    soundOff: 'Sound off',
     title: 'SATE MATCH',
     subtitle: 'Match the order card exactly. Build the skewer from bottom to top.',
     language: 'Language',
@@ -77,6 +101,8 @@ const COPY = {
     ingredients: 'Bahan',
     time: 'WAKTU',
     reset: 'ULANG',
+    soundOn: 'Suara aktif',
+    soundOff: 'Suara mati',
     title: 'SATE MATCH',
     subtitle: 'Samakan persis dengan kartu pesanan. Susun sate dari bawah ke atas.',
     language: 'Bahasa',
@@ -190,6 +216,7 @@ app.innerHTML = `
           <div class="time-row"><span id="timeLabel">TIME</span><strong id="timeText">60s</strong></div>
           <div class="time-bar"><i id="timeBar"></i></div>
         </div>
+        <button class="btn sound-btn" id="soundBtn" type="button" aria-pressed="true" aria-label="Sound on" title="Sound on">🔊</button>
         <button class="btn primary reset-btn" id="resetBtn" type="button">RESET</button>
       </footer>
     </section>
@@ -237,6 +264,7 @@ const els = {
   timeText: $('#timeText'),
   timeBar: $('#timeBar'),
   resetBtn: $('#resetBtn'),
+  soundBtn: $('#soundBtn'),
   toast: $('#toast'),
 };
 
@@ -253,6 +281,7 @@ const state = {
   quizOpen: false,
   timer: null,
   lastEndReasonKey: null,
+  soundEnabled: readSoundPreference(),
 };
 
 function t(key) {
@@ -286,6 +315,67 @@ function foodImageMarkup(food, className = 'food-art') {
 
 function multiplierLabel(value) {
   return `×${Number.isInteger(value) ? value : value.toFixed(1)}`;
+}
+
+function readSoundPreference() {
+  try {
+    return localStorage.getItem(SOUND_STORAGE_KEY) !== 'off';
+  } catch {
+    return true;
+  }
+}
+
+function storeSoundPreference(enabled) {
+  try {
+    localStorage.setItem(SOUND_STORAGE_KEY, enabled ? 'on' : 'off');
+  } catch {
+    // Ignore storage restrictions; audio still works for the current session.
+  }
+}
+
+function playSfx(name) {
+  if (!state.soundEnabled || !AUDIO_PATHS[name]) return;
+
+  const clip = new Audio(AUDIO_PATHS[name]);
+  clip.preload = 'auto';
+  clip.volume = AUDIO_VOLUMES[name] ?? 0.45;
+  clip.play().catch(() => {
+    // Browser audio can be blocked until the first trusted user interaction.
+  });
+}
+
+function playBgm({ restart = false } = {}) {
+  if (!state.soundEnabled || !state.running) return;
+  if (restart) bgm.currentTime = 0;
+  bgm.play().catch(() => {
+    // Start/retry is a user gesture, but silently tolerate stricter autoplay policies.
+  });
+}
+
+function stopBgm({ reset = false } = {}) {
+  bgm.pause();
+  if (reset) bgm.currentTime = 0;
+}
+
+function updateSoundButton() {
+  const enabled = state.soundEnabled;
+  els.soundBtn.textContent = enabled ? '🔊' : '🔇';
+  els.soundBtn.setAttribute('aria-pressed', String(enabled));
+  els.soundBtn.setAttribute('aria-label', enabled ? t('soundOn') : t('soundOff'));
+  els.soundBtn.title = enabled ? t('soundOn') : t('soundOff');
+}
+
+function toggleSound() {
+  state.soundEnabled = !state.soundEnabled;
+  storeSoundPreference(state.soundEnabled);
+  updateSoundButton();
+
+  if (state.soundEnabled) {
+    playSfx('thread');
+    playBgm();
+  } else {
+    stopBgm();
+  }
 }
 
 function renderSteps() {
@@ -324,6 +414,7 @@ function applyLanguage(lang) {
   els.retryBtn.textContent = t('retry');
   els.timeLabel.textContent = t('time');
   els.resetBtn.textContent = t('reset');
+  updateSoundButton();
 
   els.langButtons.forEach((button) => {
     const active = button.dataset.lang === lang;
@@ -436,6 +527,7 @@ function showToast(text, type = 'normal') {
 
 function pickIngredient(id) {
   if (!state.running || state.quizOpen || state.currentPick.length >= SKEWER_LENGTH) return;
+  playSfx('thread');
   state.currentPick.push(id);
   appendPlayerPiece(id);
   if (state.currentPick.length === SKEWER_LENGTH) {
@@ -456,6 +548,7 @@ function resolveSkewer() {
     state.score += gain;
     state.correctSkewers += 1;
     updateHud();
+    playSfx('success');
     els.status.textContent = t('perfect')(gain);
     showToast(t('pointsToast')(gain), 'success');
 
@@ -470,6 +563,7 @@ function resolveSkewer() {
 
   state.hearts = Math.max(0, state.hearts - 1);
   updateHud();
+  playSfx('error');
   els.status.textContent = t('wrongSkewer');
   showToast(t('wrongSkewerToast'), 'error');
 
@@ -491,6 +585,7 @@ function openQuiz() {
   if (!state.running) return;
   state.quizOpen = true;
   stopTimer();
+  playSfx('quiz');
 
   const correctFood = randomItem(FOODS);
   const distractors = shuffle(FOODS.filter((food) => food.id !== correctFood.id)).slice(0, 3);
@@ -521,12 +616,14 @@ function resolveQuiz(correct, selectedButton) {
   buttons.forEach((button) => { button.disabled = true; });
 
   if (correct) {
+    playSfx('success');
     state.multiplier += QUIZ_MULTIPLIER_STEP;
     selectedButton.classList.add('correct');
     els.quizResult.className = 'quiz-result success';
     els.quizResult.textContent = t('quizCorrect')(multiplierLabel(state.multiplier));
     showToast(t('multiplierToast')(multiplierLabel(state.multiplier)), 'success');
   } else {
+    playSfx('error');
     selectedButton.classList.add('wrong');
     els.quizResult.className = 'quiz-result error';
     els.quizResult.textContent = t('quizWrong')(multiplierLabel(state.multiplier));
@@ -582,6 +679,7 @@ function startGame() {
   updateHud();
   els.status.textContent = t('startStatus');
   startTimer();
+  playBgm({ restart: true });
 }
 
 function updateGameOverCopy() {
@@ -600,6 +698,7 @@ function endGame(reasonKey) {
   state.quizOpen = false;
   state.lastEndReasonKey = reasonKey;
   stopTimer();
+  stopBgm({ reset: true });
   updateGameOverCopy();
   els.gameOverOverlay.classList.remove('hidden');
 }
@@ -610,6 +709,7 @@ els.langButtons.forEach((button) => {
 els.startBtn.addEventListener('click', startGame);
 els.retryBtn.addEventListener('click', startGame);
 els.resetBtn.addEventListener('click', startGame);
+els.soundBtn.addEventListener('click', toggleSound);
 
 renderIngredientButtons();
 generateOrder();
