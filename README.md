@@ -55,6 +55,22 @@ npm install
 npm run dev
 ```
 
+## Same-WiFi development
+
+The Vite dev server is configured to listen on all network interfaces.
+
+```bash
+npm run dev:lan
+```
+
+Vite will print a Network URL such as:
+
+```text
+http://192.168.1.20:5173
+```
+
+Open that Network URL from a phone connected to the same Wi-Fi as the laptop. If the phone cannot connect, allow incoming connections for Node/Vite in the laptop firewall and make sure the Wi-Fi does not use client isolation.
+
 ## Validate
 
 ```bash
