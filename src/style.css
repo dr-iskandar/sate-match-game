@@ -1186,3 +1186,35 @@ button:focus-visible {
   .gameover-content .leaderboard-label { margin-top: 8px; }
   .gameover-content .leaderboard-row { min-height: 16px; }
 }
+
+/* Keep the latest gameplay logic operable if the binary art pack is not installed yet. */
+.kangsate-art-missing .gameover-panel {
+  background: #ffdfba;
+  border: 4px solid #bc8452;
+  border-radius: 18px;
+}
+.kangsate-art-missing .gameover-panel h2.sr-only {
+  position: absolute !important;
+  width: 100% !important;
+  height: auto !important;
+  clip: auto !important;
+  overflow: visible !important;
+  white-space: normal !important;
+  top: 5%;
+  left: 0;
+  margin: 0;
+  font-size: 34px;
+  color: #bd293a;
+}
+.kangsate-art-missing .home-btn {
+  color: #39894d;
+  font-size: 20px;
+  background: #a3e779;
+  border: 2px solid #5cb364;
+}
+.kangsate-art-missing .reset-btn {
+  color: #653d23;
+  font-size: 10px;
+  background: #edb47e;
+  border: 2px solid #b87945;
+}
