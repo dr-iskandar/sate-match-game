@@ -1151,3 +1151,38 @@ button:focus-visible {
   .charcoal-frames { animation: none !important; }
   .fx-sprite.playing .fx-frames { animation: none !important; }
 }
+
+/* Local-only highscores; no pretend global leaderboard. */
+.gameover-content .leaderboard-label {
+  margin-top: clamp(13px, 3vh, 25px);
+  margin-bottom: 4px;
+  color: #88522e;
+  font-size: clamp(10px, 2.7vw, 16px);
+  font-weight: 900;
+}
+.gameover-content .leaderboard {
+  display: grid;
+  gap: 1px;
+  width: 94%;
+  margin: 0 auto;
+  padding: 0;
+}
+.gameover-content .leaderboard-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  min-height: clamp(15px, 3.4vh, 29px);
+  padding: 1px 4px;
+  color: #8b532e;
+  font-size: clamp(10px, 3vw, 17px);
+  font-weight: 900;
+}
+.gameover-content .summary {
+  margin-top: 8px;
+  font-size: clamp(9px, 2.2vw, 12px);
+}
+@media (max-height: 680px) {
+  .gameover-content .leaderboard-label { margin-top: 8px; }
+  .gameover-content .leaderboard-row { min-height: 16px; }
+}
