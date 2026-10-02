@@ -49,6 +49,17 @@ The game includes lightweight CC0 audio assets:
 - A sound toggle in the footer persists the player's preference in localStorage.
 - Audio provenance and license details are recorded in `public/assets/audio/LICENSES.md`.
 
+## Kang Sate artwork
+
+The portrait gameplay UI uses the provided Kang Sate atlas and optimized WebP sprite sheets. The visual references are `main_screen.webp` and `game over.webp`. The background remains `public/assets/backgrounds/sate-kitchen-bg.webp`.
+
+**Asset installation is required:** binary design uploads are packaged separately from these source-code commits. Extract the supplied `sate-ui-assets.zip` into the repository root and copy your own `Boring Time.otf` into `public/assets/fonts/Boring Time.otf`. Then commit and push the asset folder to serve the art on other devices. Until the art pack is installed, existing ingredient SVGs and simplified fallback controls remain available.
+
+- `public/assets/v2`: sliced ingredient cards, food pieces, mini order icons, HUD panels, Game Over/Home/Reset artwork.
+- `public/assets/fx/charcoal_glow.webp`: continuous 9-frame glowing charcoal loop.
+- `public/assets/fx/smoke.webp` and `sparkle.webp`: triggered 5-frame effects when a correct skewer/quiz is completed.
+- The Game Over panel displays the device's actual top five local scores, stored in localStorage; it is not a server-wide leaderboard.
+
 ## Stack and dependencies
 
 - Vanilla JavaScript
