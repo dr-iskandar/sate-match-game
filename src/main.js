@@ -6,12 +6,12 @@ import {
 } from './gameLogic.js';
 
 const FOODS = [
-  { id: 'beef', asset: '/assets/ingredients/beef-cube.svg', name: { en: 'Beef', id: 'Daging Sapi' } },
-  { id: 'tomato', asset: '/assets/ingredients/tomato-chunk.svg', name: { en: 'Tomato', id: 'Tomat' } },
-  { id: 'mushroom', asset: '/assets/ingredients/mushroom-slice.svg', name: { en: 'Mushroom', id: 'Jamur' } },
-  { id: 'corn', asset: '/assets/ingredients/corn-chunk.svg', name: { en: 'Corn', id: 'Jagung' } },
-  { id: 'onion', asset: '/assets/ingredients/onion-piece.svg', name: { en: 'Onion', id: 'Bawang' } },
-  { id: 'shrimp', asset: '/assets/ingredients/shrimp-piece.svg', name: { en: 'Shrimp', id: 'Udang' } },
+  { id: 'beef', asset: '/assets/v2/food-beef.webp', fallback: '/assets/ingredients/beef-cube.svg', card: '/assets/v2/card-beef.webp', mini: '/assets/v2/order-beef.webp', name: { en: 'Beef', id: 'Daging Sapi' } },
+  { id: 'tomato', asset: '/assets/v2/food-tomato.webp', fallback: '/assets/ingredients/tomato-chunk.svg', card: '/assets/v2/card-tomato.webp', mini: '/assets/v2/order-tomato.webp', name: { en: 'Tomato', id: 'Tomat' } },
+  { id: 'mushroom', asset: '/assets/v2/food-mushroom.webp', fallback: '/assets/ingredients/mushroom-slice.svg', card: '/assets/v2/card-mushroom.webp', mini: '/assets/v2/order-mushroom.webp', name: { en: 'Mushroom', id: 'Jamur' } },
+  { id: 'corn', asset: '/assets/v2/food-corn.webp', fallback: '/assets/ingredients/corn-chunk.svg', card: '/assets/v2/card-corn.webp', mini: '/assets/v2/order-corn.webp', name: { en: 'Corn', id: 'Jagung' } },
+  { id: 'onion', asset: '/assets/v2/food-onion.webp', fallback: '/assets/ingredients/onion-piece.svg', card: '/assets/v2/card-onion.webp', mini: '/assets/v2/order-onion.webp', name: { en: 'Onion', id: 'Bawang' } },
+  { id: 'shrimp', asset: '/assets/v2/food-shrimp.webp', fallback: '/assets/ingredients/shrimp-piece.svg', card: '/assets/v2/card-shrimp.webp', mini: '/assets/v2/order-shrimp.webp', name: { en: 'Shrimp', id: 'Udang' } },
 ];
 
 const GAME_DURATION = 60;
@@ -57,6 +57,7 @@ const COPY = {
     time: 'TIME',
     reset: 'RESET',
     resetStatus: 'Current skewer cleared. Keep following the same order.',
+    home: 'HOME',
     soundOn: 'Sound on',
     soundOff: 'Sound off',
     title: 'SATE MATCH',
@@ -103,6 +104,7 @@ const COPY = {
     time: 'WAKTU',
     reset: 'ULANG',
     resetStatus: 'Susunan sate saat ini dihapus. Pesanan tetap sama.',
+    home: 'BERANDA',
     soundOn: 'Suara aktif',
     soundOff: 'Suara mati',
     title: 'SATE MATCH',
@@ -144,9 +146,12 @@ app.innerHTML = `
   <main class="app-shell">
     <section class="game-card" id="gameCard" aria-label="Sate Match game">
       <header class="hud">
-        <div class="hearts" id="hearts" aria-label="Health"></div>
-        <div class="hud-pill"><span id="multiplierLabel">Multiplier</span><strong id="multiplier">×1</strong></div>
-        <div class="hud-pill"><span id="scoreLabel">Score</span><strong id="score">0</strong></div>
+        <div class="hearts-frame"><div class="hearts" id="hearts" aria-label="Health"></div></div>
+        <div class="score-frame">
+          <div class="hud-pill multiplier-pill"><span id="multiplierLabel">Multiplier</span><strong id="multiplier">×1</strong></div>
+          <div class="score-divider"></div>
+          <div class="hud-pill score-pill"><span id="scoreLabel">Score</span><strong id="score">0</strong></div>
+        </div>
       </header>
 
       <section class="play-area" id="playArea">
@@ -163,8 +168,11 @@ app.innerHTML = `
           <div class="grill">
             <div class="coal"></div>
             <div class="grid-lines"></div>
-            <img class="stick-art" src="/assets/environment/skewer-stick.svg" alt="" />
+            <div class="charcoal-viewport" aria-hidden="true"><div class="charcoal-frames"></div></div>
+            <div class="wooden-skewer" aria-hidden="true"></div>
             <div class="player-stack" id="playerStack"></div>
+            <div class="fx-sprite smoke-fx" id="smokeFx" aria-hidden="true"><div class="fx-frames"></div></div>
+            <div class="fx-sprite sparkle-fx" id="sparkleFx" aria-hidden="true"><div class="fx-frames"></div></div>
           </div>
         </div>
 
@@ -202,11 +210,14 @@ app.innerHTML = `
 
         <div class="overlay hidden" id="gameOverOverlay">
           <div class="panel gameover-panel">
-            <h2 id="gameOverTitle">GAME OVER</h2>
-            <div class="label" id="finalScoreLabel">FINAL SCORE</div>
-            <div class="final-score" id="finalScore">0</div>
-            <div class="summary" id="finalSummary"></div>
-            <button class="btn primary" id="retryBtn" type="button">RETRY</button>
+            <h2 class="sr-only" id="gameOverTitle">GAME OVER</h2>
+            <div class="gameover-content">
+              <div class="label" id="finalScoreLabel">FINAL SCORE</div>
+              <div class="final-score" id="finalScore">0</div>
+              <div class="summary" id="finalSummary"></div>
+            </div>
+            <button class="btn primary retry-btn" id="retryBtn" type="button">RETRY</button>
+            <button class="home-btn" id="homeBtn" type="button" aria-label="Home" title="Home">HOME</button>
           </div>
         </div>
 
@@ -241,6 +252,8 @@ const els = {
   orderStack: $('#orderStack'),
   buildChip: $('#buildChip'),
   playerStack: $('#playerStack'),
+  smokeFx: $('#smokeFx'),
+  sparkleFx: $('#sparkleFx'),
   ingredients: $('#ingredients'),
   status: $('#status'),
   howToOverlay: $('#howToOverlay'),
@@ -262,6 +275,7 @@ const els = {
   finalScore: $('#finalScore'),
   finalSummary: $('#finalSummary'),
   retryBtn: $('#retryBtn'),
+  homeBtn: $('#homeBtn'),
   timeLabel: $('#timeLabel'),
   timeText: $('#timeText'),
   timeBar: $('#timeBar'),
@@ -312,8 +326,9 @@ function foodName(food) {
   return food.name[state.lang];
 }
 
-function foodImageMarkup(food, className = 'food-art') {
-  return `<img class="${className}" src="${food.asset}" alt="${foodName(food)}" draggable="false" />`;
+function foodImageMarkup(food, className = 'food-art', variant = 'asset') {
+  const src = food[variant] || food.asset;
+  return `<img class="${className}" src="${src}" alt="${foodName(food)}" draggable="false" />`;
 }
 
 function multiplierLabel(value) {
@@ -415,6 +430,8 @@ function applyLanguage(lang) {
   els.gameOverTitle.textContent = t('gameOver');
   els.finalScoreLabel.textContent = t('finalScore');
   els.retryBtn.textContent = t('retry');
+  els.homeBtn.setAttribute('aria-label', t('home'));
+  els.homeBtn.title = t('home');
   els.timeLabel.textContent = t('time');
   els.resetBtn.textContent = t('reset');
   updateSoundButton();
@@ -444,7 +461,7 @@ function updateHud() {
   for (let i = 0; i < MAX_HEARTS; i += 1) {
     const heart = document.createElement('img');
     const alive = i < state.hearts;
-    heart.src = alive ? '/assets/ui/heart-full.svg' : '/assets/ui/heart-empty.svg';
+    heart.src = alive ? '/assets/v2/heart-full.webp' : '/assets/ui/heart-empty.svg';
     heart.alt = '';
     heart.className = alive ? 'heart alive' : 'heart empty';
     heart.draggable = false;
@@ -471,7 +488,7 @@ function renderOrder() {
     const item = document.createElement('div');
     item.className = 'order-item';
     item.title = foodName(food);
-    item.innerHTML = foodImageMarkup(food, 'order-food-art');
+    item.innerHTML = foodImageMarkup(food, 'order-food-art', 'mini');
     els.orderStack.appendChild(item);
   });
 }
@@ -486,7 +503,8 @@ function createSkewerPiece(id, animate = false) {
 
   if (animate) {
     const visualPosition = state.currentPick.length - 1;
-    const dropDistance = Math.max(32, 150 - (visualPosition * 29));
+    const grillSize = els.playerStack.parentElement.clientWidth || 270;
+    const dropDistance = Math.max(32, grillSize * (0.63 - visualPosition * 0.11));
     item.style.setProperty('--drop-distance', `${dropDistance}px`);
   }
 
@@ -513,10 +531,19 @@ function renderIngredientButtons() {
     button.type = 'button';
     button.className = 'ingredient-btn';
     button.setAttribute('aria-label', foodName(food));
-    button.innerHTML = `${foodImageMarkup(food, 'ingredient-food-art')}<small>${foodName(food)}</small>`;
+    button.innerHTML = `${foodImageMarkup(food, 'ingredient-food-art', 'card')}<small>${foodName(food)}</small>`;
     button.addEventListener('click', () => pickIngredient(food.id));
     els.ingredients.appendChild(button);
   });
+}
+
+function replaySprite(element, lifetime) {
+  if (!element) return;
+  element.classList.remove('playing');
+  void element.offsetWidth;
+  element.classList.add('playing');
+  clearTimeout(element.fxTimer);
+  element.fxTimer = setTimeout(() => element.classList.remove('playing'), lifetime);
 }
 
 function showToast(text, type = 'normal') {
@@ -567,6 +594,8 @@ function resolveSkewer() {
     state.correctSkewers += 1;
     updateHud();
     playSfx('success');
+    replaySprite(els.smokeFx, 950);
+    replaySprite(els.sparkleFx, 850);
     els.status.textContent = t('perfect')(gain);
     showToast(t('pointsToast')(gain), 'success');
 
@@ -637,6 +666,7 @@ function resolveQuiz(correct, selectedButton) {
 
   if (correct) {
     playSfx('success');
+    replaySprite(els.sparkleFx, 850);
     state.multiplier += QUIZ_MULTIPLIER_STEP;
     selectedButton.classList.add('correct');
     els.quizResult.className = 'quiz-result success';
@@ -678,6 +708,8 @@ function startTimer() {
 }
 
 function startGame() {
+  els.smokeFx.classList.remove('playing');
+  els.sparkleFx.classList.remove('playing');
   stopTimer();
   clearTimeout(state.pendingSkewerResolution);
   Object.assign(state, {
@@ -716,6 +748,8 @@ function updateGameOverCopy() {
 
 function endGame(reasonKey) {
   if (!state.running) return;
+  els.smokeFx.classList.remove('playing');
+  els.sparkleFx.classList.remove('playing');
   clearTimeout(state.pendingSkewerResolution);
   state.pendingSkewerResolution = null;
   state.running = false;
@@ -734,6 +768,19 @@ els.startBtn.addEventListener('click', startGame);
 els.retryBtn.addEventListener('click', startGame);
 els.resetBtn.addEventListener('click', resetCurrentSkewer);
 els.soundBtn.addEventListener('click', toggleSound);
+els.homeBtn.addEventListener('click', () => {
+  stopTimer();
+  stopBgm({ reset: true });
+  clearTimeout(state.pendingSkewerResolution);
+  state.pendingSkewerResolution = null;
+  state.running = false;
+  state.quizOpen = false;
+  state.lastEndReasonKey = null;
+  els.gameOverOverlay.classList.add('hidden');
+  els.quizOverlay.classList.add('hidden');
+  els.howToOverlay.classList.remove('hidden');
+  els.status.textContent = t('startStatus');
+});
 
 renderIngredientButtons();
 generateOrder();
