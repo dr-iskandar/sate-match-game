@@ -145,6 +145,12 @@ const COPY = {
   },
 };
 
+// Until the art pack is installed, retain usable fallback controls.
+const artProbe = new Image();
+artProbe.onload = () => document.documentElement.classList.add('kangsate-art-loaded');
+artProbe.onerror = () => document.documentElement.classList.add('kangsate-art-missing');
+artProbe.src = '/assets/v2/gameover-panel.webp';
+
 const app = document.querySelector('#app');
 
 app.innerHTML = `
@@ -488,6 +494,7 @@ function applyLanguage(lang) {
   els.homeBtn.title = t('home');
   els.timeLabel.textContent = t('time');
   els.resetBtn.textContent = t('reset');
+  els.resetBtn.setAttribute('aria-label', t('reset'));
   updateSoundButton();
 
   els.langButtons.forEach((button) => {
