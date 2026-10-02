@@ -21,6 +21,7 @@ const BASE_SCORE = 10;
 const QUIZ_EVERY = 1;
 const QUIZ_MULTIPLIER_STEP = 0.5;
 const SOUND_STORAGE_KEY = 'sate-match:sound-enabled';
+const HIGH_SCORES_KEY = 'sate-match:local-highscores';
 
 const AUDIO_PATHS = {
   bgm: '/assets/audio/bgm.mp3',
@@ -58,6 +59,8 @@ const COPY = {
     reset: 'RESET',
     resetStatus: 'Current skewer cleared. Keep following the same order.',
     home: 'HOME',
+    localBest: 'LOCAL BEST',
+    runLabel: 'RUN',
     soundOn: 'Sound on',
     soundOff: 'Sound off',
     title: 'SATE MATCH',
@@ -105,6 +108,8 @@ const COPY = {
     reset: 'ULANG',
     resetStatus: 'Susunan sate saat ini dihapus. Pesanan tetap sama.',
     home: 'BERANDA',
+    localBest: 'TERBAIK LOKAL',
+    runLabel: 'MAIN',
     soundOn: 'Suara aktif',
     soundOff: 'Suara mati',
     title: 'SATE MATCH',
@@ -214,6 +219,8 @@ app.innerHTML = `
             <div class="gameover-content">
               <div class="label" id="finalScoreLabel">FINAL SCORE</div>
               <div class="final-score" id="finalScore">0</div>
+              <div class="leaderboard-label" id="leaderboardLabel">LOCAL BEST</div>
+              <div class="leaderboard" id="leaderboard"></div>
               <div class="summary" id="finalSummary"></div>
             </div>
             <button class="btn primary retry-btn" id="retryBtn" type="button">RETRY</button>
@@ -273,6 +280,8 @@ const els = {
   gameOverTitle: $('#gameOverTitle'),
   finalScoreLabel: $('#finalScoreLabel'),
   finalScore: $('#finalScore'),
+  leaderboardLabel: $('#leaderboardLabel'),
+  leaderboard: $('#leaderboard'),
   finalSummary: $('#finalSummary'),
   retryBtn: $('#retryBtn'),
   homeBtn: $('#homeBtn'),
@@ -299,6 +308,7 @@ const state = {
   lastEndReasonKey: null,
   pendingSkewerResolution: null,
   soundEnabled: readSoundPreference(),
+  highScores: readHighScores(),
 };
 
 function t(key) {
@@ -328,11 +338,55 @@ function foodName(food) {
 
 function foodImageMarkup(food, className = 'food-art', variant = 'asset') {
   const src = food[variant] || food.asset;
-  return `<img class="${className}" src="${src}" alt="${foodName(food)}" draggable="false" />`;
+  return `<img class="${className}" src="${src}" data-fallback="${food.fallback}" alt="${foodName(food)}" draggable="false" />`;
 }
+
+document.addEventListener('error', (event) => {
+  if (!(event.target instanceof HTMLImageElement)) return;
+  const image = event.target;
+  if (!image.dataset.fallback || image.src.endsWith(image.dataset.fallback)) return;
+  image.src = image.dataset.fallback;
+}, true);
 
 function multiplierLabel(value) {
   return `×${Number.isInteger(value) ? value : value.toFixed(1)}`;
+}
+
+function readHighScores() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(HIGH_SCORES_KEY) || '[]');
+    return Array.isArray(parsed)
+      ? parsed.filter((n) => Number.isFinite(n) && n >= 0).slice(0, 5)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function recordHighScore(value) {
+  state.highScores = [...state.highScores, value]
+    .sort((a, b) => b - a)
+    .slice(0, 5);
+  try {
+    localStorage.setItem(HIGH_SCORES_KEY, JSON.stringify(state.highScores));
+  } catch {
+    // Local scoreboard remains available for the current session.
+  }
+}
+
+function renderLeaderboard() {
+  els.leaderboardLabel.textContent = t('localBest');
+  els.leaderboard.innerHTML = '';
+  state.highScores.forEach((score, index) => {
+    const line = document.createElement('div');
+    line.className = 'leaderboard-row';
+    const name = document.createElement('span');
+    name.textContent = `${t('runLabel')} ${index + 1}`;
+    const points = document.createElement('strong');
+    points.textContent = String(score);
+    line.append(name, points);
+    els.leaderboard.appendChild(line);
+  });
 }
 
 function readSoundPreference() {
@@ -465,6 +519,12 @@ function updateHud() {
     heart.alt = '';
     heart.className = alive ? 'heart alive' : 'heart empty';
     heart.draggable = false;
+    if (alive) {
+      heart.addEventListener('error', () => {
+        heart.onerror = null;
+        heart.src = '/assets/ui/heart-full.svg';
+      }, { once: true });
+    }
     els.hearts.appendChild(heart);
   }
   els.multiplier.textContent = multiplierLabel(state.multiplier);
@@ -739,6 +799,7 @@ function startGame() {
 function updateGameOverCopy() {
   const reason = t(state.lastEndReasonKey);
   els.finalScore.textContent = String(state.score);
+  renderLeaderboard();
   els.finalSummary.textContent = t('summary')(
     reason,
     state.correctSkewers,
@@ -757,6 +818,7 @@ function endGame(reasonKey) {
   state.lastEndReasonKey = reasonKey;
   stopTimer();
   stopBgm({ reset: true });
+  recordHighScore(state.score);
   updateGameOverCopy();
   els.gameOverOverlay.classList.remove('hidden');
 }
