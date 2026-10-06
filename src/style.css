@@ -1289,18 +1289,23 @@ body {
  * Keep every gameplay coordinate on that same canvas instead of stretching
  * positions independently on 18:9 / 19.5:9 phones.
  */
-.game-card,
+.game-card {
+  width: min(100vw, 430px, calc(100dvh * 0.5625));
+  height: auto;
+  aspect-ratio: 9 / 16;
+  max-width: none;
+  max-height: 100dvh;
+  flex: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: 0 12px 45px rgba(0, 0, 0, .35);
+}
+
 @media (min-width: 600px) {
   .game-card {
     width: min(100vw, 430px, calc(100dvh * 0.5625));
     height: auto;
     aspect-ratio: 9 / 16;
-    max-width: none;
-    max-height: 100dvh;
-    flex: none;
-    border: 0;
-    border-radius: 0;
-    box-shadow: 0 12px 45px rgba(0, 0, 0, .35);
   }
 }
 
