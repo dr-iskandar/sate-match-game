@@ -762,7 +762,13 @@ button:focus-visible {
 .game-card {
   position: relative;
   isolation: isolate;
-  background: #44403c url('/assets/backgrounds/sate-kitchen-bg.webp') center center / cover no-repeat;
+  background-color: #44403c;
+  background-image:
+    url('/assets/backgrounds/sate-kitchen-bg-hq.webp'),
+    url('/assets/backgrounds/sate-kitchen-bg.webp');
+  background-position: center, center;
+  background-size: cover, cover;
+  background-repeat: no-repeat, no-repeat;
 }
 .play-area {
   position: static;
