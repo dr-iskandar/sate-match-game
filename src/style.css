@@ -1290,7 +1290,7 @@ body {
  * positions independently on 18:9 / 19.5:9 phones.
  */
 .game-card {
-  width: min(100vw, 430px, calc(100dvh * 0.5625));
+  width: min(100vw, 430px, 56.25dvh);
   height: auto;
   aspect-ratio: 9 / 16;
   max-width: none;
@@ -1303,7 +1303,7 @@ body {
 
 @media (min-width: 600px) {
   .game-card {
-    width: min(100vw, 430px, calc(100dvh * 0.5625));
+    width: min(100vw, 430px, 56.25dvh);
     height: auto;
     aspect-ratio: 9 / 16;
   }
@@ -1380,7 +1380,7 @@ body {
 
 /* Game-over artwork is a 448×840 panel. Size and text positions are tied to that ratio. */
 .gameover-panel {
-  width: min(67%, calc(72dvh * 448 / 840));
+  width: min(67%, 38.4dvh, 330px);
   max-width: 330px;
   max-height: none;
   aspect-ratio: 448 / 840;
