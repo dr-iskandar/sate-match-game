@@ -1260,3 +1260,202 @@ button:focus-visible {
   background: #edb47e;
   border: 2px solid #b87945;
 }
+
+/* 2026-10 review fixes: lock the 9:16 stage and stabilize visual placement. */
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+}
+
+body {
+  display: grid;
+  place-items: center;
+  background: #15110f;
+}
+
+.app-shell {
+  width: 100vw;
+  height: 100dvh;
+  padding: 0;
+  place-items: center;
+  overflow: hidden;
+}
+
+/*
+ * The supplied background was designed at 900×1600 (9:16).
+ * Keep every gameplay coordinate on that same canvas instead of stretching
+ * positions independently on 18:9 / 19.5:9 phones.
+ */
+.game-card,
+@media (min-width: 600px) {
+  .game-card {
+    width: min(100vw, 430px, calc(100dvh * 0.5625));
+    height: auto;
+    aspect-ratio: 9 / 16;
+    max-width: none;
+    max-height: 100dvh;
+    flex: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: 0 12px 45px rgba(0, 0, 0, .35);
+  }
+}
+
+/* Align the animated grill exactly to the grill baked into the 900×1600 background. */
+.grill-wrap {
+  top: 26.31%;
+  width: 78.67%;
+}
+
+.grill {
+  overflow: visible;
+}
+
+/*
+ * The charcoal sprite already contains a full circular grill frame.
+ * The old 73% radial mask made the glow look undersized.
+ */
+.charcoal-viewport {
+  inset: -1.25%;
+  width: auto;
+  height: auto;
+  border-radius: 50%;
+  mask-image: none;
+  -webkit-mask-image: none;
+  opacity: .82;
+}
+
+.charcoal-frames {
+  width: 900%;
+  height: 100%;
+}
+
+/*
+ * Never distribute the skewer pieces based on how many have been picked.
+ * column-reverse + flex-start means the first tap owns the bottom slot,
+ * then every next piece receives the same fixed pitch above it.
+ */
+.player-stack {
+  top: 12.5%;
+  width: 29%;
+  height: 72%;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0;
+}
+
+.skewer-piece {
+  width: 100%;
+  height: 18.5%;
+  flex: 0 0 18.5%;
+  margin: 0;
+  display: grid;
+  place-items: center;
+}
+
+.skewer-food-art {
+  width: 92%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: auto;
+  filter: none;
+}
+
+/* Keep transient smoke/sparkles centered on the actual grill, not the viewport. */
+.fx-sprite {
+  left: -12%;
+  top: -12%;
+  width: 124%;
+}
+
+/* Game-over artwork is a 448×840 panel. Size and text positions are tied to that ratio. */
+.gameover-panel {
+  width: min(67%, calc(72dvh * 448 / 840));
+  max-width: 330px;
+  max-height: none;
+  aspect-ratio: 448 / 840;
+  overflow: visible;
+}
+
+.gameover-content {
+  top: 43.6%;
+  bottom: 5.5%;
+  left: 12%;
+  right: 12%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  color: #8c542f;
+}
+
+.gameover-content .label {
+  margin: 0;
+  line-height: 1;
+  font-size: clamp(15px, 4.1vw, 24px);
+}
+
+.final-score {
+  flex: 0 0 auto;
+  margin: 3% 0 10%;
+  font-size: clamp(38px, 10.5vw, 62px);
+  line-height: .95;
+}
+
+.gameover-content .leaderboard-label {
+  margin: 0 4% 2%;
+  font-size: clamp(9px, 2.4vw, 14px);
+  line-height: 1;
+  text-align: left;
+}
+
+.gameover-content .leaderboard {
+  width: 84%;
+  margin: 0 auto;
+  display: grid;
+  gap: 0;
+}
+
+.gameover-content .leaderboard-row {
+  min-height: 0;
+  height: clamp(21px, 3.25dvh, 27px);
+  padding: 0;
+  font-size: clamp(11px, 3vw, 16px);
+  line-height: 1;
+}
+
+.gameover-content .summary {
+  display: none;
+}
+
+.retry-btn {
+  left: 31%;
+  bottom: 4.8%;
+  width: 38%;
+}
+
+.home-btn {
+  top: 99.2%;
+  width: 48%;
+}
+
+/* Do not re-stretch the 9:16 stage in short-screen overrides. */
+@media (max-height: 700px) {
+  .grill-wrap { top: 26.31%; width: 78.67%; }
+  .player-stack { top: 12.5%; width: 29%; height: 72%; }
+  .gameover-panel { max-height: none; }
+}
+
+@media (max-width: 360px) {
+  .gameover-content .leaderboard-row {
+    height: 20px;
+    font-size: 10px;
+  }
+  .final-score {
+    margin-bottom: 8%;
+  }
+}
