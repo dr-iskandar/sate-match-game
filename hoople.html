@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoople - Event Platform by PT Widea Kalya Teknologi</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Cheerful Font: Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Midtrans Snap Sandbox - Masukkan Client Key Staging Anda di sini -->
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js"
+        data-client-key="MASUKKAN_CLIENT_KEY_ANDA_DISINI"></script>
+
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .view-section {
+            display: none;
+        }
+
+        .view-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900 flex flex-col min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="border-b px-8 py-5 flex justify-between items-center sticky top-0 bg-white/90 backdrop-blur-md z-40">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="navigate('home')">
+            <div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold">H
+            </div>
+            <span class="text-2xl font-black text-gray-900 tracking-tight">Hoople.</span>
+        </div>
+        <div class="hidden md:flex space-x-8 text-sm font-bold text-gray-600">
+            <a href="#" onclick="navigate('home')" class="hover:text-purple-600 transition">Discover</a>
+            <a href="#" class="hover:text-purple-600 transition">Tickets</a>
+            <a href="#" onclick="navigateLegal('terms')" class="hover:text-purple-600 transition">Payment Terms</a>
+        </div>
+        <button class="bg-gray-100 px-5 py-2 rounded-full font-bold text-sm hover:bg-gray-200 transition">+ Create
+            Event</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+
+        <!-- 1. HOME & CATALOG VIEW -->
+        <div id="view-home" class="view-section active max-w-6xl mx-auto p-8">
+            <!-- Hero -->
+            <div
+                class="bg-purple-600 rounded-[2rem] p-12 md:p-16 text-white text-center mb-12 shadow-xl shadow-purple-600/20 relative overflow-hidden">
+                <div
+                    class="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiNmZmZmZmYiLz48L3N2Zz4=')]">
+                </div>
+                <h1 class="text-4xl md:text-5xl font-black mb-4 relative z-10 leading-tight">Event platform that helps
+                    communities <br> create, sell, & manage tickets with ease.</h1>
+            </div>
+
+            <!-- Event Catalog -->
+            <h2 class="text-2xl font-bold mb-6 text-gray-900">Featured Events</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-white border border-gray-100 rounded-[1.5rem] overflow-hidden shadow-sm hover:shadow-lg transition cursor-pointer group"
+                    onclick="navigate('event')">
+                    <div
+                        class="bg-purple-50 h-48 flex items-center justify-center text-6xl group-hover:scale-105 transition duration-500">
+                        🌸</div>
+                    <div class="p-5">
+                        <p class="text-xs text-gray-400 font-bold mb-2">Sat, 03 Oct 2026 | 17:00</p>
+                        <h3
+                            class="font-extrabold text-lg mb-3 leading-tight text-gray-900 group-hover:text-purple-600 transition">
+                            REGULAR SUNSET YOGA: BREATHE...</h3>
+                        <p class="text-xs text-gray-500 mb-4 flex items-center gap-1">📍 HQuarters Business Residence
+                        </p>
+                        <div class="flex items-center justify-between border-t border-gray-100 pt-3">
+                            <span class="text-xs text-gray-400">Entrance</span>
+                            <span class="font-bold text-purple-600">Rp 90.000</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. EVENT DETAIL VIEW -->
+        <div id="view-event" class="view-section max-w-5xl mx-auto p-8">
+            <button onclick="navigate('home')"
+                class="text-sm font-bold text-gray-400 hover:text-purple-600 mb-8 inline-block">← Back to
+                Discover</button>
+            <div class="flex flex-col md:flex-row gap-12">
+                <div class="w-full md:w-5/12">
+                    <div class="bg-purple-50 rounded-[2rem] aspect-square flex items-center justify-center text-9xl">🌸
+                    </div>
+                </div>
+                <div class="w-full md:w-7/12">
+                    <h1 class="text-3xl font-black mb-2 uppercase text-gray-900">REGULAR SUNSET YOGA: BREATHE ABOVE THE
+                        CITY</h1>
+                    <p class="text-purple-600 font-bold mb-6">hoople.id/sunsetyoga</p>
+
+                    <div
+                        class="flex items-center justify-between bg-white border border-gray-200 rounded-[1.5rem] p-5 mb-8 shadow-sm">
+                        <div>
+                            <p class="text-gray-400 text-sm font-bold mb-1">🎟️ Entrance Ticket</p>
+                            <p class="text-3xl font-black text-gray-900">Rp 90.000</p>
+                        </div>
+                        <button onclick="openModal('modal-ticket')"
+                            class="bg-purple-600 text-white px-8 py-3 rounded-full font-bold hover:bg-purple-700 transition shadow-lg shadow-purple-600/30">Register</button>
+                    </div>
+
+                    <h3 class="font-bold text-xl mb-3">About Event</h3>
+                    <p class="text-gray-600 mb-8 text-sm leading-relaxed">
+                        As the sun begins to set and the city skyline shifts into golden hour, elevate your
+                        practice—literally. Step onto the mat high above the noise for a magical sunset session.<br><br>
+                        Unwind from the day as we pair the fading light with a grounding, fluid sequence. Watch the city
+                        transform below while you focus on deep, intentional breathing.
+                    </p>
+
+                    <div class="space-y-4 text-sm">
+                        <div class="flex gap-4 items-start">
+                            <div class="text-purple-600 text-xl">📅</div>
+                            <div>
+                                <p class="font-bold text-gray-900">Saturday, 03 Oct 2026</p>
+                                <p class="text-gray-500">17:00 - 18:30 WIB</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 items-start">
+                            <div class="text-purple-600 text-xl">📍</div>
+                            <div>
+                                <p class="font-bold text-gray-900">HQuarters Business Residence</p>
+                                <p class="text-gray-500">Rooftop, Level 20, Bandung City</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. CHECKOUT VIEW -->
+        <div id="view-checkout" class="view-section max-w-3xl mx-auto p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-black text-gray-900">Checkout Registration</h1>
+                <p class="text-gray-500 font-bold">REGULAR SUNSET YOGA • 1x Ticket (Rp 90.000)</p>
+            </div>
+
+            <form onsubmit="handlePayment(event)" class="space-y-6">
+                <!-- Buyer Details -->
+                <div class="border border-gray-200 rounded-[1.5rem] p-6 bg-white shadow-sm">
+                    <h3 class="font-black mb-5 text-lg">Contact Detail</h3>
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Name <span
+                                    class="text-red-500">*</span></label>
+                            <input type="text"
+                                class="w-full border-2 border-gray-100 p-3 rounded-xl bg-gray-50 focus:border-purple-600 focus:bg-white outline-none transition"
+                                placeholder="Dicky Rachmat Iskandar" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Email <span
+                                    class="text-red-500">*</span></label>
+                            <input type="email"
+                                class="w-full border-2 border-gray-100 p-3 rounded-xl bg-gray-50 focus:border-purple-600 focus:bg-white outline-none transition"
+                                placeholder="drachmat.iskandar@gmail.com" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Phone <span
+                                    class="text-red-500">*</span></label>
+                            <input type="tel"
+                                class="w-full border-2 border-gray-100 p-3 rounded-xl bg-gray-50 focus:border-purple-600 focus:bg-white outline-none transition"
+                                placeholder="081234567890" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Legal Approvals (Crucial for Midtrans Review) -->
+                <div class="border border-gray-200 rounded-[1.5rem] p-6 bg-white shadow-sm">
+                    <label class="flex items-start space-x-3 text-sm cursor-pointer">
+                        <input type="checkbox" required class="accent-purple-600 w-5 h-5 mt-0.5">
+                        <span class="text-gray-600 leading-relaxed">
+                            You agree to Hoople's
+                            <a href="#" onclick="navigateLegal('terms')"
+                                class="text-purple-600 font-bold hover:underline">Terms of Payment</a>,
+                            <a href="#" onclick="navigateLegal('refund')"
+                                class="text-purple-600 font-bold hover:underline">Refund Policy</a>, and
+                            <a href="#" onclick="navigateLegal('privacy')"
+                                class="text-purple-600 font-bold hover:underline">Privacy Policy</a>,
+                            which cover your rights and how we manage your data.
+                        </span>
+                    </label>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-purple-600 text-white py-4 rounded-xl font-black text-lg hover:bg-purple-700 transition shadow-xl shadow-purple-600/30">
+                    Pay Rp 90.000 with Midtrans
+                </button>
+            </form>
+        </div>
+
+        <!-- 4. LEGAL PAGES VIEW (Wajib untuk lulus review Midtrans) -->
+        <div id="view-legal" class="view-section max-w-3xl mx-auto p-8">
+            <button onclick="navigate('home')"
+                class="text-sm font-bold text-gray-400 hover:text-purple-600 mb-8 inline-block">← Back to Home</button>
+            <h1 id="legal-title" class="text-3xl font-black text-gray-900 mb-8">Title</h1>
+            <div id="legal-content"
+                class="text-gray-600 space-y-6 leading-relaxed bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+
+        <!-- 5. SUCCESS VIEW -->
+        <div id="view-success" class="view-section max-w-xl mx-auto p-8 text-center mt-12">
+            <div
+                class="bg-green-50 text-green-500 w-24 h-24 rounded-full flex items-center justify-center mx-auto text-5xl mb-6">
+                ✓</div>
+            <h1 class="text-3xl font-black text-gray-900 mb-4">Payment Successful!</h1>
+            <p class="text-gray-500 mb-8">Thank you! Your ticket and Midtrans receipt have been confirmed and sent to
+                your email.</p>
+            <button onclick="navigate('home')"
+                class="bg-gray-900 text-white px-8 py-3 rounded-full font-bold hover:bg-black transition">Back to
+                Discover</button>
+        </div>
+    </main>
+
+    <!-- TICKET MODAL -->
+    <div id="modal-ticket"
+        class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity">
+        <div class="bg-white rounded-[2rem] p-6 w-full max-w-md m-4 shadow-2xl relative animate-[fadeIn_0.2s_ease-out]">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-black text-xl flex items-center gap-2">🎟️ Ticket Type</h3>
+                <button onclick="closeModal('modal-ticket')"
+                    class="text-gray-400 hover:text-gray-900 bg-gray-100 w-8 h-8 rounded-full flex items-center justify-center font-bold">✕</button>
+            </div>
+
+            <p class="text-sm text-gray-500 mb-4 font-bold">Ready to join? Select your tickets below.</p>
+
+            <div class="border-2 border-purple-200 bg-purple-50/50 rounded-2xl p-5 mb-6">
+                <div class="flex justify-between font-black text-gray-900 mb-1">
+                    <span>Single Registration</span>
+                    <span>Rp 90.000</span>
+                </div>
+                <div class="flex justify-between items-end mt-4">
+                    <span class="text-sm text-gray-500">Valid for 1 participant</span>
+                    <div
+                        class="flex items-center gap-4 bg-white rounded-full border border-purple-200 px-2 py-1 shadow-sm">
+                        <button
+                            class="w-6 h-6 text-purple-600 font-bold hover:bg-purple-100 rounded-full transition">-</button>
+                        <span class="font-black text-gray-900">1</span>
+                        <button
+                            class="w-6 h-6 bg-purple-600 text-white font-bold rounded-full hover:bg-purple-700 transition">+</button>
+                    </div>
+                </div>
+            </div>
+            <button onclick="proceedToCheckout()"
+                class="w-full bg-purple-600 text-white py-4 rounded-xl font-black text-lg hover:bg-purple-700 transition shadow-xl shadow-purple-600/30">Choose
+                Ticket</button>
+        </div>
+    </div>
+
+    <!-- FOOTER (Data Perusahaan PT Widea Kalya Teknologi untuk Midtrans) -->
+    <footer class="bg-gray-900 text-white pt-16 pb-8 px-8 mt-auto border-t-4 border-purple-600">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+            <div>
+                <h4 class="text-3xl font-black text-purple-400 mb-4 tracking-tight">Hoople.</h4>
+                <p class="text-sm text-gray-400">Managed and Operated by<br><strong class="text-white text-base">PT
+                        Widea Kalya Teknologi</strong></p>
+                <p class="text-sm text-gray-400 mt-4 leading-relaxed">Platform event terpercaya untuk menemukan dan
+                    membuat event komunitas dengan mudah, terintegrasi dengan secure payment gateway.</p>
+            </div>
+            <div>
+                <h4 class="font-bold text-lg mb-6 border-b border-gray-700 pb-2">Contact & Support</h4>
+                <div class="space-y-4 text-sm text-gray-400">
+                    <p class="flex items-center gap-3"><span class="text-xl">📧</span> support@hoople.co.id</p>
+                    <p class="flex items-center gap-3"><span class="text-xl">📞</span> (021) 80623840</p>
+                    <p class="flex items-start gap-3 leading-relaxed mt-2">
+                        <span class="text-xl">📍</span>
+                        <span>
+                            <strong class="text-white">Head Office:</strong><br>
+                            International Financial Centre, Jl. Jenderal Sudirman No.Kav. 22-23 Tower 2 Lt. 15,
+                            RT.10/RW.1, Kuningan, Karet, Setiabudi, South Jakarta City, Jakarta 12920.
+                        </span>
+                    </p>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-bold text-lg mb-6 border-b border-gray-700 pb-2">Legal & Policies</h4>
+                <ul class="text-sm space-y-4 text-gray-400 font-bold">
+                    <li><a href="#" onclick="navigateLegal('terms')"
+                            class="hover:text-purple-400 transition flex items-center gap-2">→ Term of Payment</a></li>
+                    <li><a href="#" onclick="navigateLegal('refund')"
+                            class="hover:text-purple-400 transition flex items-center gap-2">→ How to Refund</a></li>
+                    <li><a href="#" onclick="navigateLegal('privacy')"
+                            class="hover:text-purple-400 transition flex items-center gap-2">→ Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div
+            class="max-w-6xl mx-auto border-t border-gray-800 pt-8 text-center md:flex justify-between items-center text-xs text-gray-500 font-bold">
+            <p>&copy; 2026 PT Widea Kalya Teknologi (Hoople). All rights reserved.</p>
+            <p class="mt-2 md:mt-0">Secured Payment Processing by Midtrans.</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Data Legalitas Wajib untuk Midtrans
+        const legalData = {
+            'terms': {
+                title: 'Term of Payment (Syarat Pembayaran)',
+                content: `
+                    <h3 class="text-xl font-bold mb-2 text-gray-900">1. Metode Pembayaran</h3>
+                    <p class="mb-6">Semua transaksi di platform Hoople diproses secara real-time menggunakan payment gateway Midtrans. Kami menerima metode pembayaran resmi termasuk Kartu Kredit/Debit, Virtual Account (BCA, Mandiri, BNI, BRI), e-Wallet (GoPay, QRIS, dll), dan pembayaran retail (Alfamart/Indomaret).</p>
+                    <h3 class="text-xl font-bold mb-2 text-gray-900">2. Mata Uang dan Penagihan</h3>
+                    <p class="mb-6">Semua transaksi diproses dalam mata uang Rupiah (IDR). Total harga yang tertera pada halaman checkout merupakan harga final yang mencakup harga tiket dan pajak (jika ada). PT Widea Kalya Teknologi tidak membebankan biaya tersembunyi.</p>
+                    <h3 class="text-xl font-bold mb-2 text-gray-900">3. Penerbitan Tiket</h3>
+                    <p>Setelah status pembayaran berhasil dari Midtrans, e-ticket secara otomatis akan diterbitkan dan dikirimkan ke alamat email partisipan. Jika pembayaran melewati batas waktu kadaluarsa (expired), maka pesanan otomatis dibatalkan.</p>
+                `
+            },
+            'refund': {
+                title: 'How to Refund (Kebijakan Pengembalian)',
+                content: `
+                    <h3 class="text-xl font-bold mb-2 text-gray-900">1. Syarat Pengembalian Dana</h3>
+                    <p class="mb-6">Sesuai kebijakan PT Widea Kalya Teknologi, refund atau pengembalian dana tiket <strong>hanya berlaku jika acara dibatalkan secara sepihak oleh penyelenggara</strong> atau alasan *force majeure*. Tiket yang telah sukses dibeli tidak dapat ditukar, diuangkan, atau dikembalikan atas dasar pembatalan pribadi dari pihak pembeli.</p>
+                    <h3 class="text-xl font-bold mb-2 text-gray-900">2. Prosedur Pengajuan Refund</h3>
+                    <ul class="list-disc pl-5 mb-6 space-y-2">
+                        <li>Kirimkan permintaan refund ke email <strong>support@hoople.co.id</strong> dengan subjek: "Permohonan Refund - [Nama Acara]".</li>
+                        <li>Sertakan E-Ticket, Bukti Pembayaran dari Midtrans, dan nomor rekening penerima dana.</li>
+                    </ul>
+                    <h3 class="text-xl font-bold mb-2 text-gray-900">3. Estimasi Waktu (SLA)</h3>
+                    <p>Proses validasi dan transfer dana pengembalian akan dilakukan dalam waktu <strong>7 - 14 hari kerja</strong> terhitung sejak email permohonan disetujui oleh tim kami.</p>
+                `
+            },
+            'privacy': {
+                title: 'Privacy Policy (Kebijakan Privasi)',
+                content: `
+                    <h3 class="text-xl font-bold mb-2 text-gray-900">1. Pengumpulan Data</h3>
+                    <p class="mb-6">PT Widea Kalya Teknologi (Hoople) mengumpulkan identitas pribadi (seperti Nama Lengkap, Alamat Email, Nomor Telepon) hanya untuk keperluan validasi pembelian tiket dan akses komunikasi terkait acara.</p>
+                    <h3 class="text-xl font-bold mb-2 text-gray-900">2. Keamanan Transaksi</h3>
+                    <p class="mb-6">Informasi pembayaran Anda tidak disimpan di server Hoople. Semua data transaksi perbankan dan kartu kredit dienkripsi dan diproses langsung oleh Midtrans yang telah memiliki standar sertifikasi keamanan Level 1 PCI-DSS.</p>
+                    <h3 class="text-xl font-bold mb-2 text-gray-900">3. Berbagi Informasi Pihak Ketiga</h3>
+                    <p>Kami tidak menjual atau menyewakan informasi pribadi Anda kepada pihak ketiga. Data Anda hanya akan diteruskan secara aman ke payment gateway untuk otorisasi pembayaran dan kepada penyelenggara acara untuk keperluan daftar hadir.</p>
+                `
+            }
+        };
+
+        // Navigation Engine
+        function navigate(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-' + viewId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function navigateLegal(type) {
+            document.getElementById('legal-title').innerHTML = legalData[type].title;
+            document.getElementById('legal-content').innerHTML = legalData[type].content;
+            navigate('legal');
+        }
+
+        // Modals
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+        function proceedToCheckout() {
+            closeModal('modal-ticket');
+            navigate('checkout');
+        }
+
+        // Payment Simulation / Midtrans Snap Trigger
+        function handlePayment(e) {
+            e.preventDefault();
+
+            // Logika Midtrans Snap Asli (Uncomment jika Client Key dan Snap Token sudah siap)
+            /*
+            window.snap.pay('SNAP_TRANSACTION_TOKEN_DARI_BACKEND_ANDA', {
+                onSuccess: function(result){ navigate('success'); },
+                onPending: function(result){ alert("Waiting your payment!"); },
+                onError: function(result){ alert("Payment failed!"); },
+                onClose: function(){ alert("You closed the popup without finishing the payment"); }
+            });
+            */
+
+            // Dummy loading effect untuk mock-up
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Connecting to Midtrans...';
+            btn.classList.add('opacity-75', 'cursor-wait');
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('opacity-75', 'cursor-wait');
+                navigate('success');
+            }, 1500);
+        }
+    </script>
+</body>
+
+</html>

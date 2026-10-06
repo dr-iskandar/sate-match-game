@@ -200,13 +200,15 @@ app.innerHTML = `
                 <button type="button" class="lang-btn" data-lang="id" aria-pressed="false">Indonesia</button>
               </div>
             </div>
-            <div class="panel-hero" aria-hidden="true"><img src="/assets/ingredients/beef-cube.svg" alt="" /><img src="/assets/ingredients/tomato-chunk.svg" alt="" /><img src="/assets/ingredients/shrimp-piece.svg" alt="" /></div>
+            <div class="panel-hero" aria-hidden="true"><img src="/assets/v2/food-beef.webp" alt="" /><img src="/assets/v2/food-tomato.webp" alt="" /><img src="/assets/v2/food-shrimp.webp" alt="" /></div>
             <h1 id="gameTitle">SATE MATCH</h1>
             <p class="subtitle" id="subtitle">Match the order card exactly. Build the skewer from bottom to top.</p>
             <div class="steps" id="steps"></div>
             <button class="btn primary start-btn" id="startBtn" type="button">START GAME</button>
           </div>
         </div>
+
+        <button class="btn reset-btn" id="resetBtn" type="button" aria-label="Reset" title="Reset"></button>
 
         <div class="overlay hidden" id="quizOverlay">
           <div class="panel quiz-panel">
@@ -239,11 +241,8 @@ app.innerHTML = `
 
       <footer class="footer-bar">
         <div class="time-block">
-          <div class="time-row"><span id="timeLabel">TIME</span><strong id="timeText">60s</strong></div>
           <div class="time-bar"><i id="timeBar"></i></div>
         </div>
-        <button class="btn sound-btn" id="soundBtn" type="button" aria-pressed="true" aria-label="Sound on" title="Sound on">🔊</button>
-        <button class="btn primary reset-btn" id="resetBtn" type="button">RESET</button>
       </footer>
     </section>
   </main>
@@ -436,6 +435,7 @@ function stopBgm({ reset = false } = {}) {
 }
 
 function updateSoundButton() {
+  if (!els.soundBtn) return;
   const enabled = state.soundEnabled;
   els.soundBtn.textContent = enabled ? '🔊' : '🔇';
   els.soundBtn.setAttribute('aria-pressed', String(enabled));
@@ -492,7 +492,7 @@ function applyLanguage(lang) {
   els.retryBtn.textContent = t('retry');
   els.homeBtn.setAttribute('aria-label', t('home'));
   els.homeBtn.title = t('home');
-  els.timeLabel.textContent = t('time');
+  if (els.timeLabel) els.timeLabel.textContent = t('time');
   els.resetBtn.textContent = t('reset');
   els.resetBtn.setAttribute('aria-label', t('reset'));
   updateSoundButton();
@@ -536,7 +536,7 @@ function updateHud() {
   }
   els.multiplier.textContent = multiplierLabel(state.multiplier);
   els.score.textContent = String(state.score);
-  els.timeText.textContent = `${state.timeLeft}s`;
+  if (els.timeText) els.timeText.textContent = `${state.timeLeft}s`;
   els.timeBar.style.width = `${(state.timeLeft / GAME_DURATION) * 100}%`;
 }
 
@@ -667,11 +667,11 @@ function resolveSkewer() {
     showToast(t('pointsToast')(gain), 'success');
 
     if (shouldShowQuiz(state.correctSkewers, QUIZ_EVERY)) {
-      setTimeout(openQuiz, 450);
+      setTimeout(openQuiz, 1200);
       return;
     }
 
-    setTimeout(nextOrder, 450);
+    setTimeout(nextOrder, 850);
     return;
   }
 
@@ -836,7 +836,7 @@ els.langButtons.forEach((button) => {
 els.startBtn.addEventListener('click', startGame);
 els.retryBtn.addEventListener('click', startGame);
 els.resetBtn.addEventListener('click', resetCurrentSkewer);
-els.soundBtn.addEventListener('click', toggleSound);
+if (els.soundBtn) els.soundBtn.addEventListener('click', toggleSound);
 els.homeBtn.addEventListener('click', () => {
   stopTimer();
   stopBgm({ reset: true });
