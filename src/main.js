@@ -1,7 +1,7 @@
 import './style.css';
 import {
-  isSkewerCorrect,
-  scoreForCorrectSkewer,
+  countCorrectPositions,
+  scoreForMatchedPositions,
   shouldShowQuiz,
 } from './gameLogic.js';
 
@@ -69,17 +69,17 @@ const COPY = {
     steps: [
       'Read the order card from <strong>top to bottom</strong>.',
       'Build the skewer from <strong>bottom to top</strong> — tap the bottom ingredient first.',
-      'Correct skewer: score increases by <strong>10 × multiplier</strong>.',
-      'Wrong skewer: lose <strong>1 heart</strong>. Score stays the same.',
-      'After <strong>every correct skewer</strong>, a quiz appears.',
+      'Each ingredient in the <strong>correct position</strong> earns points. A perfect skewer is worth <strong>10 × multiplier</strong>.',
+      'An imperfect skewer still earns partial points, but costs <strong>½ heart</strong>.',
+      'After <strong>every perfect skewer</strong>, a quiz appears.',
       'Correct quiz: multiplier <strong>+0.5</strong>. Wrong quiz: no penalty.',
     ],
     start: 'START GAME',
     startStatus: 'Build from bottom to top. Tap the bottom ingredient first.',
     nextOrder: 'New order! Start from the bottom ingredient.',
     perfect: (gain) => `Perfect skewer! +${gain} points`,
-    wrongSkewer: 'Wrong skewer! You lost 1 heart.',
-    wrongSkewerToast: 'WRONG SKEWER · -1 HEART',
+    partialSkewer: (matches, gain) => `${matches}/5 positions correct · +${gain} points · -½ heart`,
+    partialSkewerToast: (matches, gain) => `${matches}/5 CORRECT · +${gain} · -½ HEART`,
     pointsToast: (gain) => `+${gain} POINTS`,
     quiz: 'QUIZ',
     quizPrompt: 'Which ingredient is this?',
@@ -118,17 +118,17 @@ const COPY = {
     steps: [
       'Baca kartu pesanan dari <strong>atas ke bawah</strong>.',
       'Susun sate dari <strong>bawah ke atas</strong> — tekan bahan paling bawah terlebih dahulu.',
-      'Sate benar: skor bertambah <strong>10 × multiplier</strong>.',
-      'Sate salah: <strong>nyawa berkurang 1</strong>. Skor tetap.',
-      'Setelah <strong>setiap sate benar</strong>, quiz akan muncul.',
+      'Setiap bahan di <strong>posisi yang benar</strong> memberi poin. Sate sempurna bernilai <strong>10 × multiplier</strong>.',
+      'Sate yang belum sempurna tetap mendapat poin parsial, tetapi kehilangan <strong>½ hati</strong>.',
+      'Setelah <strong>setiap sate sempurna</strong>, quiz akan muncul.',
       'Quiz benar: multiplier <strong>+0.5</strong>. Quiz salah: tidak ada penalti.',
     ],
     start: 'MULAI GAME',
     startStatus: 'Susun dari bawah ke atas. Tekan bahan paling bawah terlebih dahulu.',
     nextOrder: 'Pesanan baru! Mulai dari bahan paling bawah.',
-    perfect: (gain) => `Sate benar! +${gain} poin`,
-    wrongSkewer: 'Urutan salah! Nyawa berkurang 1.',
-    wrongSkewerToast: 'URUTAN SALAH · -1 NYAWA',
+    perfect: (gain) => `Sate sempurna! +${gain} poin`,
+    partialSkewer: (matches, gain) => `${matches}/5 posisi benar · +${gain} poin · -½ hati`,
+    partialSkewerToast: (matches, gain) => `${matches}/5 BENAR · +${gain} · -½ HATI`,
     pointsToast: (gain) => `+${gain} POIN`,
     quiz: 'QUIZ',
     quizPrompt: 'Bahan apakah ini?',
@@ -521,17 +521,25 @@ function updateHud() {
   els.hearts.innerHTML = '';
   for (let i = 0; i < MAX_HEARTS; i += 1) {
     const heart = document.createElement('img');
-    const alive = i < state.hearts;
-    heart.src = alive ? '/assets/v2/heart-full.webp' : '/assets/ui/heart-empty.svg';
+    const remaining = state.hearts - i;
+    const stateName = remaining >= 1 ? 'full' : remaining >= 0.5 ? 'half' : 'empty';
+
+    heart.src = stateName === 'full'
+      ? '/assets/v2/heart-full.webp'
+      : stateName === 'half'
+        ? '/assets/v2/heart-half.webp'
+        : '/assets/ui/heart-empty.svg';
     heart.alt = '';
-    heart.className = alive ? 'heart alive' : 'heart empty';
+    heart.className = `heart ${stateName}`;
     heart.draggable = false;
-    if (alive) {
+
+    if (stateName === 'full') {
       heart.addEventListener('error', () => {
         heart.onerror = null;
         heart.src = '/assets/ui/heart-full.svg';
       }, { once: true });
     }
+
     els.hearts.appendChild(heart);
   }
   els.multiplier.textContent = multiplierLabel(state.multiplier);
@@ -560,18 +568,18 @@ function renderOrder() {
   });
 }
 
-function createSkewerPiece(id, animate = false) {
+function createSkewerPiece(id, slotIndex, animate = false) {
   const food = foodById(id);
   if (!food) return null;
 
   const item = document.createElement('div');
   item.className = animate ? 'skewer-piece entering' : 'skewer-piece';
+  item.style.setProperty('--slot-index', String(slotIndex));
   item.innerHTML = foodImageMarkup(food, 'skewer-food-art');
 
   if (animate) {
-    const visualPosition = state.currentPick.length - 1;
-    const grillSize = els.playerStack.parentElement.clientWidth || 270;
-    const dropDistance = Math.max(32, grillSize * (0.63 - visualPosition * 0.11));
+    const stackHeight = els.playerStack.clientHeight || 200;
+    const dropDistance = Math.max(24, stackHeight * (0.9 - slotIndex * 0.205));
     item.style.setProperty('--drop-distance', `${dropDistance}px`);
   }
 
@@ -580,14 +588,15 @@ function createSkewerPiece(id, animate = false) {
 
 function renderPlayerStack() {
   els.playerStack.innerHTML = '';
-  state.currentPick.forEach((id) => {
-    const item = createSkewerPiece(id);
+  state.currentPick.forEach((id, slotIndex) => {
+    const item = createSkewerPiece(id, slotIndex);
     if (item) els.playerStack.appendChild(item);
   });
 }
 
 function appendPlayerPiece(id) {
-  const item = createSkewerPiece(id, true);
+  const slotIndex = state.currentPick.length - 1;
+  const item = createSkewerPiece(id, slotIndex, true);
   if (item) els.playerStack.appendChild(item);
 }
 
@@ -650,14 +659,18 @@ function resetCurrentSkewer() {
 function resolveSkewer() {
   if (!state.running || state.quizOpen) return;
 
-  // The skewer is physically built from bottom to top. The first tap is rendered
-  // at the bottom, so compare the visual top-to-bottom player stack with the
-  // top-to-bottom order card instead of comparing raw tap order.
-  const correct = isSkewerCorrect(state.currentPick, state.currentOrder);
+  const matchedPositions = countCorrectPositions(state.currentPick, state.currentOrder);
+  const correct = matchedPositions === SKEWER_LENGTH;
+  const gain = scoreForMatchedPositions(
+    matchedPositions,
+    SKEWER_LENGTH,
+    state.multiplier,
+    BASE_SCORE,
+  );
+
+  state.score += gain;
 
   if (correct) {
-    const gain = scoreForCorrectSkewer(state.multiplier, BASE_SCORE);
-    state.score += gain;
     state.correctSkewers += 1;
     updateHud();
     playSfx('success');
@@ -675,18 +688,18 @@ function resolveSkewer() {
     return;
   }
 
-  state.hearts = Math.max(0, state.hearts - 1);
+  state.hearts = Math.max(0, state.hearts - 0.5);
   updateHud();
   playSfx('error');
-  els.status.textContent = t('wrongSkewer');
-  showToast(t('wrongSkewerToast'), 'error');
+  els.status.textContent = t('partialSkewer')(matchedPositions, gain);
+  showToast(t('partialSkewerToast')(matchedPositions, gain), gain > 0 ? 'normal' : 'error');
 
   if (state.hearts <= 0) {
     setTimeout(() => endGame('outOfHearts'), 450);
     return;
   }
 
-  setTimeout(nextOrder, 550);
+  setTimeout(nextOrder, 700);
 }
 
 function nextOrder() {
