@@ -119,3 +119,29 @@ sate-match-game/
     ├── main.js
     └── style.css
 ```
+
+
+## Scoring rules (current)
+
+A skewer always contains five positions. The order card is read top-to-bottom while the player builds bottom-to-top.
+
+- Each ingredient that is correct **in the correct position** earns one fifth of the base skewer score.
+- Base perfect-skewer score is 10, so at multiplier ×1 the partial scores are 0 / 2 / 4 / 6 / 8 / 10.
+- The multiplier is applied to partial scores too. Example at ×1.5: 0 / 3 / 6 / 9 / 12 / 15.
+- An imperfect completed skewer loses exactly **0.5 heart**.
+- Only a 5/5 perfect skewer triggers the quiz.
+- A correct quiz increases the multiplier by 0.5. A wrong quiz has no score or heart penalty.
+
+The heart HUD supports full, half, and empty states.
+
+## Visual quality
+
+The gameplay canvas is locked to 9:16 so element coordinates remain stable across tall phone aspect ratios. The original 900×1600 WebP background should be kept at normal/high quality rather than aggressively compressed. Runtime CSS prefers:
+
+`public/assets/backgrounds/sate-kitchen-bg-hq.webp`
+
+and falls back to:
+
+`public/assets/backgrounds/sate-kitchen-bg.webp`
+
+The charcoal sprite uses calibrated frame-center coordinates because the supplied 2048px sprite sheet does not use perfectly equal frame cells.
