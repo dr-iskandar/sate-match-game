@@ -521,26 +521,32 @@ function applyLanguage(lang) {
 function updateHud() {
   els.hearts.innerHTML = '';
   heartFillStates(state.hearts, MAX_HEARTS).forEach((stateName) => {
-    const heart = document.createElement('img');
+    const slot = document.createElement('span');
+    slot.className = `heart-slot ${stateName}`;
 
-    heart.src = stateName === 'full'
-      ? '/assets/v2/heart-full.webp'
-      : stateName === 'half'
-        ? '/assets/v2/heart-half.webp'
-        : '/assets/ui/heart-empty.svg';
-    heart.alt = '';
-    heart.className = `heart ${stateName}`;
-    heart.draggable = false;
+    const emptyHeart = document.createElement('img');
+    emptyHeart.src = '/assets/ui/heart-empty.svg';
+    emptyHeart.alt = '';
+    emptyHeart.className = 'heart heart-empty-base';
+    emptyHeart.draggable = false;
+    slot.appendChild(emptyHeart);
 
-    if (stateName === 'full') {
-      heart.addEventListener('error', () => {
-        heart.onerror = null;
-        heart.src = '/assets/ui/heart-full.svg';
+    if (stateName !== 'empty') {
+      const fillHeart = document.createElement('img');
+      fillHeart.src = '/assets/v2/heart-full.webp';
+      fillHeart.alt = '';
+      fillHeart.className = 'heart heart-fill';
+      fillHeart.draggable = false;
+      fillHeart.addEventListener('error', () => {
+        fillHeart.onerror = null;
+        fillHeart.src = '/assets/ui/heart-full.svg';
       }, { once: true });
+      slot.appendChild(fillHeart);
     }
 
-    els.hearts.appendChild(heart);
+    els.hearts.appendChild(slot);
   });
+  els.hearts.setAttribute('aria-label', `${t('health')}: ${state.hearts}/${MAX_HEARTS}`);
   els.multiplier.textContent = multiplierLabel(state.multiplier);
   els.score.textContent = String(state.score);
   if (els.timeText) els.timeText.textContent = `${state.timeLeft}s`;
