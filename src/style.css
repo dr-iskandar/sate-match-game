@@ -1564,3 +1564,103 @@ body {
     height: 73%;
   }
 }
+
+/* Hi-res asset pass: explicit half-heart HUD + normalized sprite playback. */
+
+/* A half-heart is now an empty-heart base with the full heart clipped to 50%.
+   This guarantees that a 0.5 penalty is visually obvious and does not depend on
+   the dimensions of a separate half-heart bitmap. */
+.hearts {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.heart-slot {
+  position: relative;
+  width: 19%;
+  aspect-ratio: 44 / 37;
+  flex: 0 0 19%;
+}
+
+.heart-slot .heart {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.heart-slot .heart-fill {
+  z-index: 2;
+}
+
+.heart-slot.half .heart-fill {
+  clip-path: inset(0 50% 0 0);
+}
+
+.heart-slot.empty .heart-fill {
+  display: none;
+}
+
+.heart-slot .heart-empty-base {
+  z-index: 1;
+}
+
+/* Runtime sprite sheets are normalized to equal-size frames.
+   Use explicit held frame positions so the final frame cannot drift or flash. */
+.charcoal-viewport {
+  inset: -1.75%;
+  overflow: hidden;
+  opacity: .86;
+}
+
+.charcoal-frames {
+  position: absolute;
+  inset: 0 auto auto 0;
+  top: 0;
+  width: 900%;
+  height: 100%;
+  background: url('/assets/fx/charcoal_glow.webp') left top / 100% 100% no-repeat;
+  animation: charcoal-nine-fixed 2.7s linear infinite;
+  will-change: transform;
+}
+
+@keyframes charcoal-nine-fixed {
+  0%, 11.10% { transform: translateX(0); }
+  11.11%, 22.21% { transform: translateX(-11.111111%); }
+  22.22%, 33.32% { transform: translateX(-22.222222%); }
+  33.33%, 44.43% { transform: translateX(-33.333333%); }
+  44.44%, 55.54% { transform: translateX(-44.444444%); }
+  55.55%, 66.65% { transform: translateX(-55.555556%); }
+  66.66%, 77.76% { transform: translateX(-66.666667%); }
+  77.77%, 88.87% { transform: translateX(-77.777778%); }
+  88.88%, 99.99% { transform: translateX(-88.888889%); }
+  100% { transform: translateX(0); }
+}
+
+.fx-sprite.playing .fx-frames {
+  animation: fx-five-fixed .72s linear 1 both;
+}
+
+@keyframes fx-five-fixed {
+  0%, 19.99% { transform: translateX(0); }
+  20%, 39.99% { transform: translateX(-20%); }
+  40%, 59.99% { transform: translateX(-40%); }
+  60%, 79.99% { transform: translateX(-60%); }
+  80%, 100% { transform: translateX(-80%); }
+}
+
+/* Hi-res game-over artwork is exported from the complete uploaded component. */
+.gameover-panel {
+  aspect-ratio: 490 / 926;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .charcoal-frames,
+  .fx-sprite.playing .fx-frames {
+    animation: none !important;
+    transform: none !important;
+  }
+}
