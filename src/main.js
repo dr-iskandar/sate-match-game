@@ -1,6 +1,7 @@
 import './style.css';
 import {
   countCorrectPositions,
+  heartFillStates,
   scoreForMatchedPositions,
   shouldShowQuiz,
 } from './gameLogic.js';
@@ -519,10 +520,8 @@ function applyLanguage(lang) {
 
 function updateHud() {
   els.hearts.innerHTML = '';
-  for (let i = 0; i < MAX_HEARTS; i += 1) {
+  heartFillStates(state.hearts, MAX_HEARTS).forEach((stateName) => {
     const heart = document.createElement('img');
-    const remaining = state.hearts - i;
-    const stateName = remaining >= 1 ? 'full' : remaining >= 0.5 ? 'half' : 'empty';
 
     heart.src = stateName === 'full'
       ? '/assets/v2/heart-full.webp'
@@ -541,7 +540,7 @@ function updateHud() {
     }
 
     els.hearts.appendChild(heart);
-  }
+  });
   els.multiplier.textContent = multiplierLabel(state.multiplier);
   els.score.textContent = String(state.score);
   if (els.timeText) els.timeText.textContent = `${state.timeLeft}s`;
