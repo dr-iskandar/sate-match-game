@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "test": "node --test src/gameLogic.test.js",
     "check": "npm run test && node --check src/main.js && node --check src/gameLogic.js",
-    "dev:lan": "vite --host 0.0.0.0 --port 5173"
+    "dev:lan": "vite --host 0.0.0.0 --port 5173",
+    "tunnel": "./cloudflared tunnel --url http://localhost:5173"
   },
   "devDependencies": {
     "vite": "7.1.7"
