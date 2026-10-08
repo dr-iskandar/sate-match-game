@@ -1,5 +1,6 @@
 import './style.css';
 import {
+  applyHeartPenalty,
   countCorrectPositions,
   heartFillStates,
   scoreForMatchedPositions,
@@ -693,7 +694,7 @@ function resolveSkewer() {
     return;
   }
 
-  state.hearts = Math.max(0, state.hearts - 0.5);
+  state.hearts = applyHeartPenalty(state.hearts, 0.5);
   updateHud();
   playSfx('error');
   els.status.textContent = t('partialSkewer')(matchedPositions, gain);
