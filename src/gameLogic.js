@@ -43,6 +43,12 @@ export function scoreForCorrectSkewer(multiplier, baseScore = 10) {
   return scoreForMatchedPositions(1, 1, multiplier, baseScore);
 }
 
+export function applyHeartPenalty(hearts, penalty = 0.5) {
+  const safeHearts = Number.isFinite(hearts) ? Math.max(0, hearts) : 0;
+  const safePenalty = Number.isFinite(penalty) && penalty > 0 ? penalty : 0.5;
+  return Math.max(0, Math.round((safeHearts - safePenalty) * 2) / 2);
+}
+
 export function heartFillStates(hearts, maxHearts = 5) {
   const safeMax = Number.isInteger(maxHearts) && maxHearts > 0 ? maxHearts : 5;
   const safeHearts = Number.isFinite(hearts)
