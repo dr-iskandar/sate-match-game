@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  applyHeartPenalty,
   countCorrectPositions,
   heartFillStates,
   isSkewerCorrect,
@@ -61,6 +62,14 @@ test('full score uses current multiplier', () => {
   assert.equal(scoreForCorrectSkewer(1), 10);
   assert.equal(scoreForCorrectSkewer(1.5), 15);
   assert.equal(scoreForCorrectSkewer(2), 20);
+});
+
+test('wrong completed skewer removes exactly half a heart', () => {
+  assert.equal(applyHeartPenalty(5), 4.5);
+  assert.equal(applyHeartPenalty(4.5), 4);
+  assert.equal(applyHeartPenalty(1), 0.5);
+  assert.equal(applyHeartPenalty(0.5), 0);
+  assert.equal(applyHeartPenalty(0), 0);
 });
 
 test('half-heart HUD states are deterministic', () => {
