@@ -1470,3 +1470,97 @@ body {
     margin-bottom: 8%;
   }
 }
+
+/* Precision pass: fixed skewer slots and calibrated charcoal sprite playback. */
+
+/*
+ * The supplied charcoal sheet is not laid out on equal 1/9 frame cells.
+ * Its visual centers are x = 151, 369, 586.5, 804, 1022, 1240, 1458,
+ * 1678 and 1895.5 on a 2048px-wide source. These explicit positions keep
+ * the grill center stationary through the complete loop.
+ */
+.charcoal-viewport {
+  inset: -1.75%;
+  overflow: hidden;
+  opacity: .86;
+}
+
+.charcoal-frames {
+  position: absolute;
+  left: 0;
+  top: -47.2%;
+  width: 1131%;
+  height: 201%;
+  background: url('/assets/fx/charcoal_glow.webp') left top / 100% 100% no-repeat;
+  animation: charcoal-calibrated 2.7s linear infinite;
+  will-change: transform;
+}
+
+@keyframes charcoal-calibrated {
+  0%, 11.10% { transform: translateX(-2.9522%); }
+  11.11%, 22.21% { transform: translateX(-13.5967%); }
+  22.22%, 33.32% { transform: translateX(-24.2168%); }
+  33.33%, 44.43% { transform: translateX(-34.8369%); }
+  44.44%, 55.54% { transform: translateX(-45.4815%); }
+  55.55%, 66.65% { transform: translateX(-56.1260%); }
+  66.66%, 77.76% { transform: translateX(-66.7705%); }
+  77.77%, 88.87% { transform: translateX(-77.5127%); }
+  88.88%, 99.99% { transform: translateX(-88.1328%); }
+  100% { transform: translateX(-2.9522%); }
+}
+
+/*
+ * Five fixed physical slots. The layout no longer redistributes existing
+ * pieces whenever another ingredient is added.
+ */
+.player-stack {
+  top: 12.4%;
+  left: 50%;
+  width: 30%;
+  height: 73%;
+  transform: translateX(-50%);
+  display: block;
+}
+
+.skewer-piece {
+  position: absolute;
+  left: 0;
+  bottom: calc(var(--slot-index, 0) * 20.25%);
+  width: 100%;
+  height: 18%;
+  margin: 0;
+  display: grid;
+  place-items: center;
+}
+
+.skewer-food-art {
+  width: 92%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: auto;
+  transform: translateZ(0);
+}
+
+.skewer-piece.entering {
+  animation: skewer-thread-in .38s cubic-bezier(.22,.82,.28,1.08) both;
+}
+
+.heart.half {
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Prefer the supplied 900×1600 source at its original quality. */
+.game-card {
+  background-image:
+    url('/assets/backgrounds/sate-kitchen-bg-hq.webp'),
+    url('/assets/backgrounds/sate-kitchen-bg.webp');
+}
+
+@media (max-height: 700px) {
+  .player-stack {
+    top: 12.4%;
+    width: 30%;
+    height: 73%;
+  }
+}
