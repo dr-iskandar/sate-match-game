@@ -43,6 +43,20 @@ export function scoreForCorrectSkewer(multiplier, baseScore = 10) {
   return scoreForMatchedPositions(1, 1, multiplier, baseScore);
 }
 
+export function heartFillStates(hearts, maxHearts = 5) {
+  const safeMax = Number.isInteger(maxHearts) && maxHearts > 0 ? maxHearts : 5;
+  const safeHearts = Number.isFinite(hearts)
+    ? Math.min(safeMax, Math.max(0, Math.round(hearts * 2) / 2))
+    : safeMax;
+
+  return Array.from({ length: safeMax }, (_, index) => {
+    const remaining = safeHearts - index;
+    if (remaining >= 1) return 'full';
+    if (remaining >= 0.5) return 'half';
+    return 'empty';
+  });
+}
+
 export function shouldShowQuiz(correctSkewers, every = 5) {
   return Number.isInteger(correctSkewers)
     && correctSkewers > 0
