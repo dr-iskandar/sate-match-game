@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   countCorrectPositions,
+  heartFillStates,
   isSkewerCorrect,
   scoreForCorrectSkewer,
   scoreForMatchedPositions,
@@ -60,6 +61,14 @@ test('full score uses current multiplier', () => {
   assert.equal(scoreForCorrectSkewer(1), 10);
   assert.equal(scoreForCorrectSkewer(1.5), 15);
   assert.equal(scoreForCorrectSkewer(2), 20);
+});
+
+test('half-heart HUD states are deterministic', () => {
+  assert.deepEqual(heartFillStates(5), ['full', 'full', 'full', 'full', 'full']);
+  assert.deepEqual(heartFillStates(4.5), ['full', 'full', 'full', 'full', 'half']);
+  assert.deepEqual(heartFillStates(3.5), ['full', 'full', 'full', 'half', 'empty']);
+  assert.deepEqual(heartFillStates(0.5), ['half', 'empty', 'empty', 'empty', 'empty']);
+  assert.deepEqual(heartFillStates(0), ['empty', 'empty', 'empty', 'empty', 'empty']);
 });
 
 test('quiz can trigger after every fully correct skewer', () => {
